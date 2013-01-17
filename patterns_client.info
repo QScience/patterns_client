@@ -1,0 +1,6 @@
+name = Patterns Client beta
+description = Communication client to a Patterns server
+core = 7.x
+
+dependencies[] = patterns
+dependencies[] = pils
