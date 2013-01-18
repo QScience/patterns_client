@@ -47,7 +47,7 @@ function patterns_client_menu_alter(&$items) {
 
 function patterns_client_patterns_publish($pattern) {
   if (variable_get('patterns_client_auto_publish', FALSE)) {
-    patterns_client_push_patterns_client(array($pattern));
+    patterns_client_push_patterns(array($pattern));
   }
   else {
     drupal_set_message(t('Automatic publishing of patterns not enabled.'), 'warning');

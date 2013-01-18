@@ -8,8 +8,10 @@
 
 module_load_include('module', 'pils');
 
+require_once '../pest/Pest.php';
+
 function patterns_client_registered_on_server($url) {
-  if (!empty($url)) return FALSE;
+  if (empty($url)) return FALSE;
   
   // TODO ask the server if I am registered
   
@@ -65,16 +67,28 @@ function patterns_client_push_patterns($patterns) {
   
    // Create pest object. Will send them all in one connection
   $pest = new Pest($url);
-  $results =  $pest->post('/post', $imploded_patterns);
   
-  drupal_set_message('Communication DONE');
-  
-//  if ($results === FALSE) {
+  try {
+    $results = $pest->post('/post', $imploded_patterns);
+    drupal_set_message('Communication DONE: ' . $results);
+    
+  //  if ($results === FALSE) {
 //    drupal_set_message(check_plain($url) . ' - ' . check_plain($error_string), 'error');
 //  }
 //  else {
 //    drupal_set_message('Upload to server successful.<br/>' . check_plain($url) . ' - ' . check_plain($res)); // TODO: proper t()
 //  }
+    
+  }
+  catch(Exception $e) {
+    drupal_set_message('patterns_client: A communication error occurred.', 'error');
+    drupal_set_message($e->getMessage(), 'error');
+  }
+  
+  
+  
+  
+
   
   
 }

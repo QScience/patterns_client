@@ -18,7 +18,7 @@ function patterns_client_form_outgoing_configure() {
   );
   $form['auto'] = array(
     '#type' => 'checkbox',
-    '#default_value' => variable_get('patterns_auto_publish', FALSE),
+    '#default_value' => variable_get('patterns_client_auto_publish', FALSE),
     '#title' => t('Automatically publish patterns'),
     '#description' => t('If checked, patterns are automatically published whenever the \'publish\'-button is hit.'),
   );
@@ -46,11 +46,7 @@ function patterns_client_form_incoming_configure_submit($form, &$form_state) {
   variable_set('patterns_client_allow_publish', $form_state['values']['allow'] ? TRUE : FALSE);
   drupal_set_message(t('The changes have been saved.'));
 }
-function patterns_client_form_outgoing_configure_validate($form, &$form_state) {
-  if (!drupaltodrupal_check_url($form_state['values']['address'])) {
-    form_set_error('address', t('Address must start with \'http://\' or \'https://\' and end with \'/\'.'));
-  }
-}
+
 function patterns_client_form_outgoing_configure_submit($form, &$form_state) {
   if ($form_state['values']['auto']) {
     drupaltodrupal_blindly_add_friend($form_state['values']['address'], 'patterns server', FALSE);
@@ -68,7 +64,7 @@ function patterns_client_config() {
   $build['main'][] = drupal_get_form('patterns_client_form_incoming_configure');
   if (variable_get('patterns_client_auto_publish', FALSE)) {
     $url = variable_get('patterns_server', PATTERNS_SERVER);
-    if (patterns_client_registered_on_server($url)) {
+    if (!patterns_client_registered_on_server($url)) {
       drupal_set_message(t('You are not registered on server @url.', array('@url' => $url)), 'error');
     }
     else {
