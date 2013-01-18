@@ -8,8 +8,6 @@
 
 module_load_include('module', 'pils');
 
-require_once '../pest/Pest.php';
-
 function patterns_client_registered_on_server($url) {
   if (!empty($url)) return FALSE;
   
@@ -26,6 +24,11 @@ function patterns_client_push_patterns($patterns) {
     return FALSE;
   }
 
+  $credentials = array(
+    'user' => 'client',
+    'pwd' => '123456'
+  );
+  
   $upload_patterns = array();
   
   foreach ($patterns as $pattern) {
@@ -61,7 +64,7 @@ function patterns_client_push_patterns($patterns) {
   }
   
    // Create pest object. Will send them all in one connection
-  $pest = new PestXML($url);
+  $pest = new Pest($url);
   $results =  $pest->post('/post', $imploded_patterns);
   
   drupal_set_message('Communication DONE');

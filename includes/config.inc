@@ -18,7 +18,7 @@ function patterns_client_form_outgoing_configure() {
   );
   $form['auto'] = array(
     '#type' => 'checkbox',
-    '#default_value' => variable_get('patterns_d2d_auto_publish', FALSE),
+    '#default_value' => variable_get('patterns_auto_publish', FALSE),
     '#title' => t('Automatically publish patterns'),
     '#description' => t('If checked, patterns are automatically published whenever the \'publish\'-button is hit.'),
   );
@@ -77,3 +77,18 @@ function patterns_client_config() {
   }
   return $build;
 }
+
+function patterns_client_register_user() {
+  $form = array();
+  
+  if (!variable_get('patterns_client_username', FALSE)) {
+    $form['register'] = array();
+    
+  }
+  else {
+    
+  }
+  
+  return $form;
+}
+
