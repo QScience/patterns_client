@@ -26,12 +26,14 @@ function patterns_client_push_patterns($patterns) {
     return FALSE;
   }
 
-  $credentials = array(
+  $upload_patterns = array();
+  
+  $upload_patterns[]['credentials'] = array(
     'user' => 'client',
-    'pwd' => '123456'
+    'pwd' => '$S$DKkXhlSuqkDyL8XS3AZ45oUu2/bIu35sTRsQjmsKS006NdK9hiML',
   );
   
-  $upload_patterns = array();
+  
   
   foreach ($patterns as $pattern) {
     $name = $pattern->name;
@@ -57,19 +59,19 @@ function patterns_client_push_patterns($patterns) {
     
     $upload_patterns[] = $imploded_pattern;
   }
-  $error_string = '';
-  $imploded_patterns = pils_implode($upload_patterns);
-  
-  if ($imploded_patterns === FALSE) {
-    drupal_set_message(t('Internal error while collecting patterns to be sent.'), 'error'); 
-    return FALSE;
-  }
+//  $error_string = '';
+//  $imploded_patterns = pils_implode($upload_patterns);
+//  
+//  if ($imploded_patterns === FALSE) {
+//    drupal_set_message(t('Internal error while collecting patterns to be sent.'), 'error'); 
+//    return FALSE;
+//  }
   
    // Create pest object. Will send them all in one connection
   $pest = new Pest($url);
   
   try {
-    $results = $pest->post('/post', $imploded_patterns);
+    $results = $pest->post('/post', $upload_patterns);
     drupal_set_message('Communication DONE: ' . $results);
     
   //  if ($results === FALSE) {
