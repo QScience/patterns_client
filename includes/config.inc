@@ -48,9 +48,6 @@ function patterns_client_form_incoming_configure_submit($form, &$form_state) {
 }
 
 function patterns_client_form_outgoing_configure_submit($form, &$form_state) {
-  if ($form_state['values']['auto']) {
-    drupaltodrupal_blindly_add_friend($form_state['values']['address'], 'patterns server', FALSE);
-  }
   variable_set('patterns_client_auto_publish', $form_state['values']['auto'] ? TRUE : FALSE);
   variable_set('patterns_server', $form_state['values']['address']);
   drupal_set_message(t('The changes have been saved.'));
