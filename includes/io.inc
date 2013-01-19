@@ -25,15 +25,20 @@ function patterns_client_push_patterns($patterns) {
     drupal_set_message(t('No registered Patterns server found.'), 'error');
     return FALSE;
   }
-
-  $upload_patterns = array();
   
-  $upload_patterns[]['credentials'] = array(
+  $credentials = array(
     'user' => 'client',
     'pwd' => '$S$DKkXhlSuqkDyL8XS3AZ45oUu2/bIu35sTRsQjmsKS006NdK9hiML',
   );
   
+  $imploded_credentials = pils_implode($credentials);
   
+  if ($imploded_credentials === FALSE) {
+     drupal_set_message(t('An error occurred while parsing your account data.'), 'error');
+    return FALSE;
+  }
+  
+  $upload_patterns = array();
   
   foreach ($patterns as $pattern) {
     $name = $pattern->name;
@@ -59,19 +64,26 @@ function patterns_client_push_patterns($patterns) {
     
     $upload_patterns[] = $imploded_pattern;
   }
-//  $error_string = '';
-//  $imploded_patterns = pils_implode($upload_patterns);
-//  
-//  if ($imploded_patterns === FALSE) {
-//    drupal_set_message(t('Internal error while collecting patterns to be sent.'), 'error'); 
-//    return FALSE;
-//  }
+
+  $post = array(
+    'credentials' => $imploded_credentials,
+    'patterns' => $imploded_patterns,
+  );
+  
+  
+  $error_string = '';
+  $imploded_post = pils_implode($post);
+  
+  if ($imploded_post === FALSE) {
+    drupal_set_message(t('Internal error while collecting patterns to be sent.'), 'error'); 
+    return FALSE;
+  }
   
    // Create pest object. Will send them all in one connection
   $pest = new Pest($url);
   
   try {
-    $results = $pest->post('/post', $upload_patterns);
+    $results = $pest->post('/post', $post);
     drupal_set_message('Communication DONE: ' . $results);
     
   //  if ($results === FALSE) {
