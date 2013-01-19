@@ -7,8 +7,8 @@
 
 
 module_load_include('module', 'pils');
-
-require_once '../pest/Pest.php';
+// Pest
+module_load_include('php', 'patterns_client', 'pest/Pest');
 
 function patterns_client_registered_on_server($url) {
   if (empty($url)) return FALSE;
