@@ -28,7 +28,7 @@ function patterns_client_push_patterns($patterns) {
   
   $credentials = array(
     'user' => 'client',
-    'pwd' => '$S$DKkXhlSuqkDyL8XS3AZ45oUu2/bIu35sTRsQjmsKS006NdK9hiML',
+    'pwd' => '$S$Da.jp1uSIGwdcuqjMX8Nb6eX6A5rzjmpYGTnQxo.XJcHPckB3fZC',
   );
   
   $imploded_credentials = pils_implode($credentials);
@@ -65,13 +65,21 @@ function patterns_client_push_patterns($patterns) {
     $upload_patterns[] = $imploded_pattern;
   }
 
+  $imploded_patterns = pils_implode($upload_patterns);
+  
+  if ($imploded_patterns === FALSE) {
+    drupal_set_message(t('Internal error while compacting the patterns to be sent.'), 'error'); 
+    return FALSE;
+  }
+  
+  
   $post = array(
     'credentials' => $imploded_credentials,
     'patterns' => $imploded_patterns,
   );
   
   
-  $error_string = '';
+
   $imploded_post = pils_implode($post);
   
   if ($imploded_post === FALSE) {
@@ -85,7 +93,7 @@ function patterns_client_push_patterns($patterns) {
   try {
     $results = $pest->post('/post', $post);
     drupal_set_message('Communication DONE: ' . $results);
-    
+//      $error_string = '';
   //  if ($results === FALSE) {
 //    drupal_set_message(check_plain($url) . ' - ' . check_plain($error_string), 'error');
 //  }
