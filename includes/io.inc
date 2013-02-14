@@ -92,6 +92,7 @@ function patterns_client_push_patterns($patterns) {
   
   try {
     $results = $pest->post('/post', $post);
+    //drupal_set_message('Patterns was successfully uploaded to http://www.drupal-patterns.org');
     drupal_set_message('Communication DONE: ' . $results);
 //      $error_string = '';
   //  if ($results === FALSE) {
