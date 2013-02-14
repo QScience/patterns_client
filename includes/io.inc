@@ -7,8 +7,7 @@
 
 
 module_load_include('module', 'pils');
-// Pest
-module_load_include('php', 'patterns_client', 'pest/Pest');
+
 
 function patterns_client_registered_on_server($url) {
   if (empty($url)) return FALSE;
@@ -80,38 +79,24 @@ function patterns_client_push_patterns($patterns) {
   
   
 
-  $imploded_post = pils_implode($post);
+  // do we need this??
+  //$imploded_post = pils_implode($post);
+  //
+  //if ($imploded_post === FALSE) {
+  //  drupal_set_message(t('Internal error while collecting patterns to be sent.'), 'error'); 
+  //  return FALSE;
+  //}
+  ///
   
-  if ($imploded_post === FALSE) {
-    drupal_set_message(t('Internal error while collecting patterns to be sent.'), 'error'); 
-    return FALSE;
+  $error_string = '';  
+  
+  $res = drupaltodrupal_call_secure_rpc($url, 'patterns_server_publish_patterns', $post, $error_string);
+  
+  if ($res === FALSE) {
+    drupal_set_message(check_plain($url) . ' - ' . check_plain($error_string), 'error');
   }
-  
-   // Create pest object. Will send them all in one connection
-  $pest = new Pest($url);
-  
-  try {
-    $results = $pest->post('/post', $post);
-    //drupal_set_message('Patterns was successfully uploaded to http://www.drupal-patterns.org');
-    drupal_set_message('Communication DONE: ' . $results);
-//      $error_string = '';
-  //  if ($results === FALSE) {
-//    drupal_set_message(check_plain($url) . ' - ' . check_plain($error_string), 'error');
-//  }
-//  else {
-//    drupal_set_message('Upload to server successful.<br/>' . check_plain($url) . ' - ' . check_plain($res)); // TODO: proper t()
-//  }
-    
+  else {
+    drupal_set_message('Upload to server successful.<br/>' . check_plain($url) . ' - ' . check_plain($res)); // TODO: proper t()
   }
-  catch(Exception $e) {
-    drupal_set_message('patterns_client: A communication error occurred.', 'error');
-    drupal_set_message($e->getMessage(), 'error');
-  }
-  
-  
-  
-  
 
-  
-  
 }
