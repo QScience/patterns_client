@@ -9,6 +9,16 @@
 module_load_include('module', 'pils');
 
 
+function patterns_client_get_friend($url) {
+  $friends = drupaltodrupal_get_friends();
+  foreach ($friends as $friend) {
+    if ($friend['url'] === $url) {
+      return $friend;
+    }
+  }
+  return FALSE;
+}
+
 function patterns_client_registered_on_server($url) {
   if (empty($url)) return FALSE;
   
@@ -27,7 +37,7 @@ function patterns_client_push_patterns($patterns) {
   
   $credentials = array(
     'user' => 'client',
-    'pwd' => '$S$Da.jp1uSIGwdcuqjMX8Nb6eX6A5rzjmpYGTnQxo.XJcHPckB3fZC',
+    'pwd' => 'a',//$S$Da.jp1uSIGwdcuqjMX8Nb6eX6A5rzjmpYGTnQxo.XJcHPckB3fZC',
   );
   
   $imploded_credentials = pils_implode($credentials);
@@ -90,7 +100,9 @@ function patterns_client_push_patterns($patterns) {
   
   $error_string = '';  
   
-  $res = drupaltodrupal_call_secure_rpc($url, 'patterns_server_publish_patterns', $post, $error_string);
+  $friend = patterns_client_get_friend($url);
+  
+  $res = drupaltodrupal_call_secure_rpc($friend, 'patterns_server_publish_patterns', $post, $error_string);
   
   if ($res === FALSE) {
     drupal_set_message(check_plain($url) . ' - ' . check_plain($error_string), 'error');
