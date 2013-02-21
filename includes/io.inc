@@ -9,6 +9,13 @@
 module_load_include('module', 'pils');
 
 
+function patterns_client_get_credentials($server, $user = NULL) {
+	return array(
+    'user' => 'client',
+    'pwd' => '$S$DUXALZMQHtE3P08CvcaVhsOaacrQGr5JSTox19nPWQFIxrZxmGA0',
+  );
+}
+
 function patterns_client_get_friend($url) {
   $friends = drupaltodrupal_get_friends();
   foreach ($friends as $friend) {
@@ -35,10 +42,7 @@ function patterns_client_push_patterns($patterns) {
     return FALSE;
   }
   
-  $credentials = array(
-    'user' => 'client',
-    'pwd' => 'a',//$S$Da.jp1uSIGwdcuqjMX8Nb6eX6A5rzjmpYGTnQxo.XJcHPckB3fZC',
-  );
+  $credentials = patterns_client_get_credentials($url);
   
   $imploded_credentials = pils_implode($credentials);
   
