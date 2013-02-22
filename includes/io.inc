@@ -10,11 +10,20 @@ module_load_include('module', 'pils');
 
 
 function patterns_client_get_credentials($server, $user = NULL) {
-	return array(
-    'user' => 'client',
-    'pwd' => '$S$DUXALZMQHtE3P08CvcaVhsOaacrQGr5JSTox19nPWQFIxrZxmGA0',
-  );
+	return variable_get('patterns_client_user', FALSE);
+	//return array(
+  //  'user' => 'client',
+  //  'pwd' => '$S$DUXALZMQHtE3P08CvcaVhsOaacrQGr5JSTox19nPWQFIxrZxmGA0',
+  //);
 }
+
+function patterns_client_is_user_registered_on_server($url, $user) {
+  if (empty($url)) return FALSE;
+  $pc_user = variable_get('patterns_client_user', FALSE);
+  
+  return $pc_user && !empty($pc_user[$url]);  	
+}
+
 
 function patterns_client_get_friend($url) {
   $friends = drupaltodrupal_get_friends();
@@ -26,12 +35,39 @@ function patterns_client_get_friend($url) {
   return FALSE;
 }
 
-function patterns_client_registered_on_server($url) {
-  if (empty($url)) return FALSE;
-  
-  // TODO ask the server if I am registered
-  
-  return TRUE;
+function patterns_client_register_user_on_server($url, $user, $pwd, $email) {
+	
+	$friend = patterns_client_get_friend($url);
+	
+	$post = pils_implode(array(
+		'user' => $user,
+		'pwd' => $pwd,
+		'email' => $email,
+	));
+	
+	$post = array(
+		'user' => $user,
+		'pwd' => $pwd,
+		'email' => $email,
+	);
+	
+	if ($post === FALSE) {
+    drupal_set_message(t('An error occurred while compacting your account data.'), 'error');
+    return FALSE;
+  }
+	
+	// send the request
+	$error_string = '';  
+	$res = drupaltodrupal_call_secure_rpc($friend, 'patterns_server_register_client', $post, $error_string);
+	
+	// save the results
+	if ($res === FALSE) {
+    drupal_set_message(check_plain($url) . ' - ' . check_plain($error_string), 'error');
+  }
+  else {
+    drupal_set_message('Request sent successfully. ' . check_plain($url) . ' - ' .  check_plain($res)); // TODO: proper t()
+  }
+	
 }
 
 function patterns_client_push_patterns($patterns) {
