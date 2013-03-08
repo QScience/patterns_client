@@ -10,14 +10,16 @@ module_load_include('module', 'pils');
 
 
 function patterns_client_get_credentials($server, $user = NULL) {
-	return variable_get('patterns_client_user', FALSE);
-	//return array(
-  //  'user' => 'client',
-  //  'pwd' => '$S$DUXALZMQHtE3P08CvcaVhsOaacrQGr5JSTox19nPWQFIxrZxmGA0',
-  //);
+	//return variable_get('patterns_client_user', FALSE);
+	return array(
+    'user' => 'client',
+    'pwd' => '$S$DUXALZMQHtE3P08CvcaVhsOaacrQGr5JSTox19nPWQFIxrZxmGA0',
+  );
 }
 
-function patterns_client_is_user_registered_on_server($url, $user) {
+function patterns_client_is_user_registered_on_server($url, $user = NULL) {
+	return TRUE;
+	
   if (empty($url)) return FALSE;
   $pc_user = variable_get('patterns_client_user', FALSE);
   
@@ -71,9 +73,9 @@ function patterns_client_register_user_on_server($url, $user, $pwd, $email) {
 }
 
 function patterns_client_push_patterns($patterns) {
-  $url = variable_get('patterns_server', PATTERNS_SERVER);
+  $url = variable_get('patterns_server', PATTERNS_CLIENT_SERVER);
   
-  if (!patterns_client_registered_on_server($url)) {
+  if (!patterns_client_is_user_registered_on_server($url)) {
     drupal_set_message(t('No registered Patterns server found.'), 'error');
     return FALSE;
   }
