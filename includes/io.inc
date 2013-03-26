@@ -10,18 +10,22 @@ module_load_include('module', 'pils');
 
 
 function patterns_client_get_credentials($server, $user = NULL) {
-	//return variable_get('patterns_client_user', FALSE);
+	$conf = variable_get(PATTERNS_CLIENT_CREDENTIALS, FALSE);
+	if (!$conf || empty($conf[$server])) return FALSE;
+	
+	if (!is_null($user) && $conf[$server]['user'] != $user) return FALSE;
+	
 	return array(
-    'user' => 'client',
-    'pwd' => '$S$DUXALZMQHtE3P08CvcaVhsOaacrQGr5JSTox19nPWQFIxrZxmGA0',
-  );
+		'user' => $conf[$server]['user'],
+		'pwd' => $conf[$server]['token'],
+	);
+	
 }
 
-function patterns_client_is_user_registered_on_server($url, $user = NULL) {
-  if (empty($url)) return FALSE;
-  $pc_user = variable_get('patterns_client_user', FALSE);
-  
-  return $pc_user && !empty($pc_user[$url]);  	
+function patterns_client_is_user_registered_on_server($server, $user = NULL) {
+  if (empty($server)) return FALSE;
+  $credentials = patterns_client_get_credentials($server, $user);
+  return $credentials ? TRUE : FALSE;  	
 }
 
 
@@ -58,17 +62,31 @@ function patterns_client_register_user_on_server($url, $user, $pwd, $email) {
 	
 	// send the request
 	$error_string = '';  
-	$res = drupaltodrupal_call_secure_rpc($friend, 'patterns_server_register_client', $post, $error_string);
+	$token = drupaltodrupal_call_secure_rpc($friend, 'patterns_server_register_client', $post, $error_string);
 	
 	// save the results
-	if ($res === FALSE) {
+	if ($token === FALSE) {
     drupal_set_message(check_plain($url) . ' - ' . check_plain($error_string), 'error');
   }
   else {
-    drupal_set_message('Request sent successfully. ' . check_plain($url) . ' - ' .  check_plain($res)); // TODO: proper t()
+  	
+  	patterns_client_update_credentials($url, $user, $token, $email);
+  	
+    drupal_set_message('Request sent successfully. ' . check_plain($url) . ' - ' .  check_plain($token)); // TODO: proper t()
   }
 	
 }
+
+function patterns_client_update_credentials($server, $user, $token, $email) {
+	$current = variable_get(PATTERNS_CLIENT_CREDENTIALS, array());
+	$current[$server] = array(
+		'user' => $user,
+		'token' => $token,
+		'email' => $email,
+	);
+	variable_set(PATTERNS_CLIENT_CREDENTIALS, $current);
+}
+
 
 function patterns_client_push_patterns($patterns) {
   $url = variable_get('patterns_server', PATTERNS_CLIENT_SERVER);
