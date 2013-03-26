@@ -18,8 +18,6 @@ function patterns_client_get_credentials($server, $user = NULL) {
 }
 
 function patterns_client_is_user_registered_on_server($url, $user = NULL) {
-	return TRUE;
-	
   if (empty($url)) return FALSE;
   $pc_user = variable_get('patterns_client_user', FALSE);
   
