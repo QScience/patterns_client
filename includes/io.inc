@@ -8,19 +8,36 @@
 
 module_load_include('module', 'pils');
 
-
-function patterns_client_get_credentials($server, $user = NULL) {
+function patterns_client_get_full_credentials($server, $user = NULL) {
 	$conf = variable_get(PATTERNS_CLIENT_CREDENTIALS, FALSE);
 	if (!$conf || empty($conf[$server])) return FALSE;
 	
 	if (!is_null($user) && $conf[$server]['user'] != $user) return FALSE;
 	
-	return array(
-		'user' => $conf[$server]['user'],
-		'pwd' => $conf[$server]['token'],
-	);
+	return $conf[$server];
 	
 }
+
+function patterns_client_get_credentials($server, $user = NULL) {
+	$conf = patterns_client_get_full_credentials($server, $user);
+	if (!$conf) return FALSE;
+	
+	return array(
+		'user' => $conf['user'],
+		'pwd' => $conf['token'],
+	);
+}
+
+function patterns_client_update_credentials($server, $user, $token, $email) {
+	$current = variable_get(PATTERNS_CLIENT_CREDENTIALS, array());
+	$current[$server] = array(
+		'user' => $user,
+		'token' => $token,
+		'email' => $email,
+	);
+	variable_set(PATTERNS_CLIENT_CREDENTIALS, $current);
+}
+
 
 function patterns_client_is_user_registered_on_server($server, $user = NULL) {
   if (empty($server)) return FALSE;
@@ -69,23 +86,14 @@ function patterns_client_register_user_on_server($url, $user, $pwd, $email) {
     drupal_set_message(check_plain($url) . ' - ' . check_plain($error_string), 'error');
   }
   else {
-  	
-  	patterns_client_update_credentials($url, $user, $token, $email);
-  	
-    drupal_set_message('Request sent successfully. ' . check_plain($url) . ' - ' .  check_plain($token)); // TODO: proper t()
+  	drupal_set_message('Registration executed successfully. ' . check_plain($url)); // TODO: proper t()
+  	patterns_client_update_credentials($url, $user, check_plain($token), $email);
+    drupal_set_message('Credentials stored in local database'); // TODO: proper t()
   }
 	
 }
 
-function patterns_client_update_credentials($server, $user, $token, $email) {
-	$current = variable_get(PATTERNS_CLIENT_CREDENTIALS, array());
-	$current[$server] = array(
-		'user' => $user,
-		'token' => $token,
-		'email' => $email,
-	);
-	variable_set(PATTERNS_CLIENT_CREDENTIALS, $current);
-}
+
 
 
 function patterns_client_push_patterns($patterns) {

@@ -29,20 +29,7 @@ function patterns_client_form_outgoing_configure() {
   );
   return $form;
 }
-function patterns_client_form_incoming_configure() {
-  $form = array();
-//  $form['allow'] = array(
-//    '#type' => 'checkbox',
-//    '#default_value' => variable_get('patterns_client_allow_publish', FALSE),
-//    '#title' => t('Allow patterns to be published'),
-//    '#description' => t('If checked, friends with the required permissions can publish patterns on this server, see D2D\'s groups/permissions.'),
-//  );
-//  $form['submit'] = array(
-//    '#type' => 'submit',
-//    '#value' => t('Save'),
-//  );
-  return $form;
-}
+
 function patterns_client_form_incoming_configure_submit($form, &$form_state) {
   variable_set('patterns_client_allow_publish', $form_state['values']['allow'] ? TRUE : FALSE);
   drupal_set_message(t('The changes have been saved.'));
@@ -53,17 +40,19 @@ function patterns_client_form_outgoing_configure_submit($form, &$form_state) {
   variable_set('patterns_client_server', $form_state['values']['address']);
   drupal_set_message(t('The changes have been saved.'));
 }
+
 function patterns_client_config() {
   $build['main'] = array(
-    '#title' => t('Sharing settings'),
+    '#title' => t('Patterns Server'),
     '#type' => 'fieldset',
   );
   $build['main'][] = drupal_get_form('patterns_client_form_outgoing_configure');
-  $build['main'][] = drupal_get_form('patterns_client_form_incoming_configure');
   if (variable_get('patterns_client_auto_publish', FALSE)) {
     $url = variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER);
     
-    if (!patterns_client_is_user_registered_on_server($url, NULL)) {
+    $credentials = patterns_client_get_full_credentials($url);
+    
+    if (!$credentials) {
     	$build['register'] = array(
     		'#title' => t('Register a new username'),
     		'#type' => 'fieldset',
@@ -77,6 +66,26 @@ function patterns_client_config() {
     }
     else {
       drupal_set_message(t('You are correctly registered on server @url.', array('@url' => $url)));
+      
+      $build['credentials'] = array(
+      	'#title' => 'Your credentials',
+      	'#type' => 'fieldset',
+      );
+      
+      $info['Server'][] = t('Server');
+  	  $info['Server'][] = $url;
+  	  $info['User'][] = t('User');
+      $info['User'][] = $credentials['user'];
+      $info['Token'][] = t('Token');
+      $info['Token'][] = $credentials['token'];
+      $info['Email'][] = t('Email');
+      $info['Email'][] = $credentials['email'];
+    
+      $build['credentials'][] = array(
+    		'#markup' => theme('table', array('rows' => $info, 'attributes' => array('class' => 'patterns-list'))),
+    	);
+      
+      
     }
   }
   return $build;
