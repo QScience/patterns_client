@@ -1,5 +1,5 @@
 name = Patterns Client beta
-description = Communication client to a Patterns server
+description = Manages an encrypted communication with a Patterns server
 core = 7.x
 
 package = Patterns
