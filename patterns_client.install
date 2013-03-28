@@ -9,4 +9,6 @@ function patterns_client_install() {}
   //return $schema;
 //}
 
-function patterns_client_uninstall() {}
+function patterns_client_uninstall() {
+	
+}
