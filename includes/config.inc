@@ -135,7 +135,7 @@ function patterns_client_register_user_validate($form, &$form_state) {
 }
 
 function patterns_client_register_user_submit($form, &$form_state) {
-	$url = variable_get(PATTERNS_CLIENT_SERVER);
+	$url = variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER);
 	$user = $form_state['values']['user'];
 	$pwd = $form_state['values']['password'];
 	$email = $form_state['values']['email'];
