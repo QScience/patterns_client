@@ -10,5 +10,7 @@ function patterns_client_install() {}
 //}
 
 function patterns_client_uninstall() {
-	
+	variable_del('patterns_client_auto_publish');
+	variable_del('patterns_client_credentials');
+	variable_del('patterns_client_server');
 }
