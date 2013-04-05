@@ -47,7 +47,7 @@ function patterns_client_is_user_registered_on_server($server, $user = NULL) {
 
 
 function patterns_client_get_friend($url) {
-  $friends = drupaltodrupal_get_friends();
+  $friends = d2d_get_friends();
   foreach ($friends as $friend) {
     if ($friend['url'] === $url) {
       return $friend;
@@ -79,7 +79,7 @@ function patterns_client_register_user_on_server($url, $user, $pwd, $email) {
 	
 	// send the request
 	$error_string = '';  
-	$token = drupaltodrupal_call_secure_rpc($friend, 'patterns_server_register_client', $post, $error_string);
+	$token = d2d_call_secure_rpc($friend, 'patterns_server_register_client', $post, $error_string);
 	
 	// save the results
 	if ($token === FALSE) {
@@ -168,7 +168,7 @@ function patterns_client_push_patterns($patterns) {
   
   $friend = patterns_client_get_friend($url);
   
-  $res = drupaltodrupal_call_secure_rpc($friend, 'patterns_server_publish_patterns', $post, $error_string);
+  $res = d2d_call_secure_rpc($friend, 'patterns_server_publish_patterns', $post, $error_string);
   
   if ($res === FALSE) {
     drupal_set_message(check_plain($url) . ' - ' . check_plain($error_string), 'error');
