@@ -5,22 +5,20 @@
  * Forms and settings for Patterns Client
  */
 
-
-//function patterns_client_d2d_friends_select($form = array(), $name = 'd2dfriends') {
-//  $friends = d2d_get_friends();
-//}
+module_load_include('inc', 'd2d', 'includes/d2d.forms');
 
 function patterns_client_form_outgoing_configure() {
   $form = array();
+  
   $form['address'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Address'),
-    '#description' => t('Address of a central server to which patterns should be published'),
-    '#default_value' => variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER),
-    '#size' => 40,
-    '#maxlength' => PATTERNS_CLIENT_URL_MAX_LENGTH,
-    '#required' => TRUE,
+  	'#title' => 'Patterns server address',
+  	'#required' => TRUE,
+  	'#default_value' => variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER),
+  	'#description' => t('Visit the <a href="@url">D2D admin page</a> to add more servers to the list.', array('@url' => url('admin/d2d'))),
   );
+  
+  d2d_forms_select_friends($form['address'], 'url');
+  
   $form['auto'] = array(
     '#type' => 'checkbox',
     '#default_value' => variable_get('patterns_client_auto_publish', FALSE),

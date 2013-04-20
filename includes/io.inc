@@ -6,7 +6,7 @@
  */
 
 
-module_load_include('module', 'pils');
+module_load_include('module', 'd2d');
 
 function patterns_client_get_full_credentials($server, $user = NULL) {
 	$conf = variable_get(PATTERNS_CLIENT_CREDENTIALS, FALSE);
@@ -49,7 +49,7 @@ function patterns_client_register_user_on_server($url, $user, $pwd, $email) {
 	
 	$friend = d2d_get_friend_by_url($url);
 	
-	$post = pils_implode(array(
+	$post = d2d_implode(array(
 		'user' => $user,
 		'pwd' => $pwd,
 		'email' => $email,
@@ -95,7 +95,7 @@ function patterns_client_push_patterns($patterns) {
   
   $credentials = patterns_client_get_credentials($url);
   
-  $imploded_credentials = pils_implode($credentials);
+  $imploded_credentials = d2d_implode($credentials);
   
   if ($imploded_credentials === FALSE) {
      drupal_set_message(t('An error occurred while parsing your account data.'), 'error');
@@ -113,7 +113,7 @@ function patterns_client_push_patterns($patterns) {
       drupal_set_message(t('Pattern') . ' ' . check_plain($name) . ' ' . t('could not be processed'), 'error'); 
       continue;
     }
-    $imploded_pattern = pils_implode(
+    $imploded_pattern = d2d_implode(
       array(
         'name' => $name,
         'format' => $format,
@@ -129,7 +129,7 @@ function patterns_client_push_patterns($patterns) {
     $upload_patterns[] = $imploded_pattern;
   }
 
-  $imploded_patterns = pils_implode($upload_patterns);
+  $imploded_patterns = d2d_implode($upload_patterns);
   
   if ($imploded_patterns === FALSE) {
     drupal_set_message(t('Internal error while compacting the patterns to be sent.'), 'error'); 
@@ -145,7 +145,7 @@ function patterns_client_push_patterns($patterns) {
   
 
   // do we need this??
-  //$imploded_post = pils_implode($post);
+  //$imploded_post = d2d_implode($post);
   //
   //if ($imploded_post === FALSE) {
   //  drupal_set_message(t('Internal error while collecting patterns to be sent.'), 'error'); 
