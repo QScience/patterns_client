@@ -45,20 +45,9 @@ function patterns_client_is_user_registered_on_server($server, $user = NULL) {
   return $credentials ? TRUE : FALSE;  	
 }
 
-
-function patterns_client_get_friend($url) {
-  $friends = d2d_get_friends();
-  foreach ($friends as $friend) {
-    if ($friend['url'] === $url) {
-      return $friend;
-    }
-  }
-  return FALSE;
-}
-
 function patterns_client_register_user_on_server($url, $user, $pwd, $email) {
 	
-	$friend = patterns_client_get_friend($url);
+	$friend = d2d_get_friend_by_url($url);
 	
 	$post = pils_implode(array(
 		'user' => $user,
@@ -166,7 +155,7 @@ function patterns_client_push_patterns($patterns) {
   
   $error_string = '';  
   
-  $friend = patterns_client_get_friend($url);
+  $friend = d2d_get_friend_by_url($url);
   
   $res = d2d_call_secure_rpc($friend, 'patterns_server_publish_patterns', $post, $error_string);
   

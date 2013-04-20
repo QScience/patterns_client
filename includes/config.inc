@@ -6,6 +6,10 @@
  */
 
 
+//function patterns_client_d2d_friends_select($form = array(), $name = 'd2dfriends') {
+//  $friends = d2d_get_friends();
+//}
+
 function patterns_client_form_outgoing_configure() {
   $form = array();
   $form['address'] = array(
