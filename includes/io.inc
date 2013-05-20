@@ -47,7 +47,7 @@ function patterns_client_is_user_registered_on_server($server, $user = NULL) {
 
 function patterns_client_register_user_on_server($url, $user, $pwd, $email) {
 	
-	$friend = d2d_get_friend_by_url($url);
+	$friend = d2d_api_friend_get_by_url($url);
 	
 	$post = d2d_implode(array(
 		'user' => $user,
@@ -155,7 +155,7 @@ function patterns_client_push_patterns($patterns) {
   
   $error_string = '';  
   
-  $friend = d2d_get_friend_by_url($url);
+  $friend = d2d_api_friend_get_by_url($url);
   
   $res = d2d_call_secure_rpc($friend, 'patterns_server_publish_patterns', $post, $error_string);
   

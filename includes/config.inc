@@ -105,8 +105,7 @@ function patterns_client_register_user() {
     '#required' => TRUE,
   );
   $form['password'] = array(
-    '#type' => 'password',
-    '#title' => t('Password'),
+    '#type' => 'password_confirm',
   	'#required' => TRUE,
   );
   $form['email'] = array(
