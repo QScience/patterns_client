@@ -71,8 +71,8 @@ function patterns_client_register_user_on_server($url, $user, $pwd, $email) {
 	$token = d2d_call_secure_rpc($friend, 'patterns_server_register_client', $post, $error_string);
 	
 	// save the results
-	if ($token === FALSE) {
-    drupal_set_message(check_plain($url) . ' - ' . check_plain($error_string), 'error');
+	if (_patterns_client_is_registration_error($token)) {
+    drupal_set_message(check_plain($url) . ' - ' . t('%err', array('%err' => $token)), 'error');
   }
   else {
   	drupal_set_message('Registration executed successfully. ' . check_plain($url)); // TODO: proper t()
@@ -82,7 +82,10 @@ function patterns_client_register_user_on_server($url, $user, $pwd, $email) {
 	
 }
 
-
+function _patterns_client_is_registration_error($str) {
+  $needle = 'Registration-Error.';
+  return !strncmp($str, $needle, strlen($needle));
+}
 
 
 function patterns_client_push_patterns($patterns) {

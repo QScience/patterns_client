@@ -54,24 +54,14 @@ function patterns_client_config() {
     
     $credentials = patterns_client_get_full_credentials($url);
     
-    if (!$credentials) {
-    	$build['register'] = array(
-    		'#title' => t('Register a new username'),
-    		'#type' => 'fieldset',
-  		); 
-    	$build['register'][] = array(
-    		'#markup' => '<strong>You are currently not registered on the server</strong>',
-    	);
-    	
-    	$build['register'][] = drupal_get_form('patterns_client_register_user');
-      drupal_set_message(t('You are not registered on server @url.', array('@url' => $url)), 'error');
-    }
-    else {
-      drupal_set_message(t('You are correctly registered on server @url.', array('@url' => $url)));
+    if ($credentials) {
+
+      //drupal_set_message(t('You are correctly registered on server @url.', array('@url' => $url)));
       
       $build['credentials'] = array(
-      	'#title' => 'Your credentials',
+      	'#title' => 'Your current credentials',
       	'#type' => 'fieldset',
+        '#description' => t('You can edit this data go directly in the Patterns Server web site. Then do the linking to an existing username.')
       );
       
       $info['Server'][] = t('Server');
@@ -87,18 +77,66 @@ function patterns_client_config() {
     		'#markup' => theme('table', array('rows' => $info, 'attributes' => array('class' => 'patterns-list'))),
     	);
       
+    	$build['credentials']['modify'] = array(
+      	'#title' => 'Below modify',
+      );
       
     }
+    else {
+       drupal_set_message(t('You are not registered on server @url.', array('@url' => $url)), 'error');
+    }
+    
+    // REGISTER NEW
+    $build['register'] = array(
+  		'#title' => $credentials ? t('Register a new username (overwrites your current credentials)') : t('Register a new username'),
+  		'#type' => 'fieldset',
+		);
+  	$build['register'][] = drupal_get_form('patterns_client_register_remoteuser');
+   
+
+  	// LINK TO
+    $build['link'] = array(
+    	'#title' => $credentials ? t('Link to an existing username (overwrites your current credentials)') : t('Link to an existing username'),
+  		'#type' => 'fieldset',
+      '#description' =>  t('If you do not remember your username or password visit your Patterns Server web site and try a password recovery procedure there.'), 
+		); 
+  	$build['link'][] = drupal_get_form('patterns_client_link_remoteuser');
+    
   }
   return $build;
 }
 
-function patterns_client_register_user() {
+function patterns_client_link_remoteuser() {
   $form = array();
   $form['user'] = array(
     '#type' => 'textfield',
     '#title' => t('Username'),
-    '#description' => t('Username to register on the server'),
+    '#description' => t('Existing username on server'),
+    //'#default_value' => variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER),
+    '#size' => 40,
+    '#maxlength' => PATTERNS_CLIENT_USER_MAX_LENGTH,
+    '#required' => TRUE,
+  );
+  $form['password'] = array(
+    '#type' => 'password',
+    '#title' => t('Password'),
+    '#required' => TRUE,
+  );
+ 
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Link'),
+  );
+  
+  return $form;
+}
+
+function patterns_client_register_remoteuser() {
+  $form = array();
+  $form['user'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Username'),
+    '#description' => t('New username to register on server'),
     //'#default_value' => variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER),
     '#size' => 40,
     '#maxlength' => PATTERNS_CLIENT_USER_MAX_LENGTH,
@@ -123,7 +161,7 @@ function patterns_client_register_user() {
   return $form;
 }
 
-function patterns_client_register_user_validate($form, &$form_state) {
+function patterns_client_register_remoteuser_validate($form, &$form_state) {
 	if (!variable_get('patterns_client_server', FALSE)) {
 		drupal_set_message(t('No server found to register a new user'), 'error');
 		return FALSE;
@@ -140,7 +178,7 @@ function patterns_client_register_user_validate($form, &$form_state) {
 	return TRUE;
 }
 
-function patterns_client_register_user_submit($form, &$form_state) {
+function patterns_client_register_remoteuser_submit($form, &$form_state) {
 	$url = variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER);
 	$user = $form_state['values']['user'];
 	$pwd = $form_state['values']['password'];
