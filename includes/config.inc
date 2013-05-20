@@ -61,7 +61,7 @@ function patterns_client_config() {
       $build['credentials'] = array(
       	'#title' => 'Your current credentials',
       	'#type' => 'fieldset',
-        '#description' => t('You can edit this data go directly in the Patterns Server web site. Then do the linking to an existing username.')
+        '#description' => t('You can edit this data go directly in the Patterns Server web site. Then use the "link to an existing username" form.')
       );
       
       $info['Server'][] = t('Server');
@@ -129,6 +129,21 @@ function patterns_client_link_remoteuser() {
   );
   
   return $form;
+}
+
+function patterns_client_link_remoteuser_validate($form, &$form_state) {
+	if (!variable_get('patterns_client_server', FALSE)) {
+		drupal_set_message(t('No server found to link to an existing user'), 'error');
+		return FALSE;
+	}
+	return TRUE;
+}
+
+function patterns_client_link_remoteuser_submit($form, &$form_state) {
+	$url = variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER);
+	$user = $form_state['values']['user'];
+	$pwd = $form_state['values']['password'];
+	patterns_client_link_user_on_server($url, $user, $pwd);
 }
 
 function patterns_client_register_remoteuser() {
