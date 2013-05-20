@@ -106,6 +106,7 @@ function patterns_client_register_user() {
   );
   $form['password'] = array(
     '#type' => 'password_confirm',
+  	'#description' => t('Must be at least 6 characters/digits long'),
   	'#required' => TRUE,
   );
   $form['email'] = array(
@@ -130,6 +131,10 @@ function patterns_client_register_user_validate($form, &$form_state) {
 	
 	if (!valid_email_address($form_state['values']['email'])) {
   	form_set_error('email', t('The email address appears to be invalid.'));
+	}
+	
+  if (strlen($form_state['values']['password']) < 6) {
+  	form_set_error('password', t('Password must be at least 6 characters/digits long'));
 	}
 	
 	return TRUE;
