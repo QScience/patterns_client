@@ -238,3 +238,40 @@ function patterns_client_push_patterns($patterns) {
   }
 
 }
+
+
+function _patterns_client_get_patterns_list() {
+  $url = variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER);
+  $friend = d2d_api_friend_get_by_url($url);
+
+  $post = array(
+      'limit' => '10',
+  );
+
+  // send the request
+  $error_string = '';
+  $token = d2d_call_secure_rpc($friend, 'patterns_server_get_patterns_list', $post, $error_string);
+
+  // Unknown Error
+  if (is_null($token)) {
+    drupal_set_message(check_plain($url) . ' - ' . t('Unknown error'), 'error');
+  }
+
+  // Communication Error
+  else if ($token === FALSE) {
+    //drupal_set_message(check_plain($url) . ' - ' . check_plain($error_string), 'error');
+    echo(
+        t('The XML-RPC server returned this response: @response',
+            array('@response' => print_r($token, TRUE)))
+    );
+  }
+  // save the results
+  else {
+    //drupal_set_message('Message successfully received ' . $token); // TODO: proper t()
+    echo(
+        t('The XML-RPC server returned this response: @response',
+            array('@response' => print_r($token, TRUE)))
+    );
+  }
+
+}
