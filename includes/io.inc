@@ -245,33 +245,37 @@ function _patterns_client_get_patterns_list() {
   $friend = d2d_api_friend_get_by_url($url);
 
   $post = array(
-      'limit' => '10',
+      'limit' => '0',
   );
 
   // send the request
   $error_string = '';
-  $token = d2d_call_secure_rpc($friend, 'patterns_server_get_patterns_list', $post, $error_string);
+  $list = d2d_explode(d2d_call_secure_rpc($friend, 'patterns_server_get_patterns_list', $post, $error_string));
 
   // Unknown Error
-  if (is_null($token)) {
+  if (is_null($list)) {
     drupal_set_message(check_plain($url) . ' - ' . t('Unknown error'), 'error');
   }
 
   // Communication Error
-  else if ($token === FALSE) {
+  elseif ($list === FALSE) {
     //drupal_set_message(check_plain($url) . ' - ' . check_plain($error_string), 'error');
     echo(
         t('The XML-RPC server returned this response: @response',
-            array('@response' => print_r($token, TRUE)))
+            array('@response' => print_r($error_string, TRUE)))
     );
-  }
-  // save the results
-  else {
+  }else{
     //drupal_set_message('Message successfully received ' . $token); // TODO: proper t()
     echo(
         t('The XML-RPC server returned this response: @response',
-            array('@response' => print_r($token, TRUE)))
+            array('@response' => print_r($list, TRUE)))
     );
+    foreach ($list as $p) {
+      $pattern = d2d_explode($p);
+      echo $pattern['uuid'];
+      echo $pattern['desc'];
+      echo $pattern['url'];
+    }
   }
 
 }
