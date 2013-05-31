@@ -241,36 +241,43 @@ function patterns_client_push_patterns($patterns) {
 
 
 function _patterns_client_get_patterns_list() {
+  // Get the current server
   $url = variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER);
   $friend = d2d_api_friend_get_by_url($url);
 
+  // Prepare arguments for the call. In this case just the maximum number of patterns expected
   $post = array(
       'limit' => '10',
   );
 
-  // send the request
+  // Send the request. We explode the result in two different steps
   $error_string = '';
   $result = d2d_call_secure_rpc($friend, 'patterns_server_get_patterns_list', $post, $error_string);
-  // We will do in two different steps in order to check the value
   $result = d2d_explode($result);
 
   // Unknown Error
   if (!is_null($result['error'])) {
+    // Check why this function is not being properly set
     //drupal_set_message(check_plain($url) . ' - ' . t('Unknown error'), 'error');
     echo(t('The Patterns server returned this response: @response',
             array('@response' => print_r($result['error'], TRUE))));
   }else{
+    // Check why this function is not being properly set
     //drupal_set_message('Message successfully received ' . $token); // TODO: proper t()
     $patterns_list = d2d_explode($result['return']);
-    echo(
+    /*echo(
         t('The Patterns server returned this response: @response',
             array('@response' => print_r($patterns_list, TRUE)))
-    );
+    );*/
     foreach ($patterns_list as $p) {
       $pattern = d2d_explode($p);
-      echo $pattern['uuid'];
-      echo $pattern['desc'];
-      echo $pattern['url'];
+      echo '<p>';
+      echo '</br>PID: ' . $pattern['pid'];
+      echo '</br>UUID: ' . $pattern['uuuid'];
+      echo '</br>Title: ' . $pattern['title'];
+      echo '</br>Description: ' . $pattern['description'];
+      echo '</br>URL: ' . $pattern['download_url'];
+      echo '</p>';
     }
   }
 
