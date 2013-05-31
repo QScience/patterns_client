@@ -240,7 +240,7 @@ function patterns_client_push_patterns($patterns) {
 }
 
 
-function _patterns_client_get_patterns_list() {
+function _patterns_client_get_patterns_server_list() {
   // Get the current server
   $url = variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER);
   $friend = d2d_api_friend_get_by_url($url);
@@ -255,20 +255,11 @@ function _patterns_client_get_patterns_list() {
   $result = d2d_call_secure_rpc($friend, 'patterns_server_get_patterns_list', $post, $error_string);
   $result = d2d_explode($result);
 
-  // Unknown Error
+  // Display communitcation errors if any
   if (!is_null($result['error'])) {
-    // Check why this function is not being properly set
-    //drupal_set_message(check_plain($url) . ' - ' . t('Unknown error'), 'error');
-    echo(t('The Patterns server returned this response: @response',
-            array('@response' => print_r($result['error'], TRUE))));
+    drupal_set_message(t('The Patterns server returned this response: @response', array('@response' => $result['error'])), 'error');
   }else{
-    // Check why this function is not being properly set
-    //drupal_set_message('Message successfully received ' . $token); // TODO: proper t()
     $patterns_list = d2d_explode($result['return']);
-    /*echo(
-        t('The Patterns server returned this response: @response',
-            array('@response' => print_r($patterns_list, TRUE)))
-    );*/
     foreach ($patterns_list as $p) {
       $pattern = d2d_explode($p);
       echo '<p>';

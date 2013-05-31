@@ -28,11 +28,14 @@ function patterns_client_menu() {
   // This is the client form menu entry. This form is used to allow user
   // interaction with the services, but again, user interface is not required
   // to create an XML-RPC client with Drupal.
-  $items['patterns-server-list'] = array(
-      'title'           => 'Patterns Server List',
-      'description'     => 'Get the list of patterns from the server chosen',
-      'page callback' => '_patterns_client_get_patterns_list',
+  
+  //Add new tab to list patterns stored in the server
+  $items['admin/patterns/import/patterns-server'] = array(
+      'title' => 'Patterns at Patterns Server',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('_patterns_client_get_patterns_server_list'),
       'access arguments' => array('administer patterns'),
+      'type' => MENU_LOCAL_TASK,
   );
   return $items;
 }
