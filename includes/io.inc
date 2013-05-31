@@ -239,7 +239,15 @@ function patterns_client_push_patterns($patterns) {
 
 }
 
-
+/**
+ * 
+ * Performs a remote call to the Patterns Server using D2D in order
+ * to retrieve the list of Patterns stored in the server sorted by its 
+ * timestamp descendingly.
+ * 
+ * @param int $limit
+ * @return array List of patterns currently stored in the server
+ */
 function _patterns_client_get_patterns_server_list($limit) {
   // Get the current server
   $url = variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER);
@@ -267,5 +275,4 @@ function _patterns_client_get_patterns_server_list($limit) {
     }
     return $exploded_result;
   }
-
 }

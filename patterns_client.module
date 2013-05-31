@@ -29,11 +29,10 @@ function patterns_client_menu() {
   // interaction with the services, but again, user interface is not required
   // to create an XML-RPC client with Drupal.
   
-  //Add new tab to list patterns stored in the server
+  //Add new tab in Patterns import to list patterns stored in the server
   $items['admin/patterns/import/patterns-server'] = array(
       'title' => 'Patterns at Patterns Server',
       'page callback' => 'patterns_client_import_patterns_server',
-      //'page arguments' => array('patterns_client_import_patterns_server'),
       'access arguments' => array('administer patterns'),
       'type' => MENU_LOCAL_TASK,
   );
@@ -75,6 +74,13 @@ function patterns_client_patterns_publish($pattern) {
   }
 }
 
+/**
+ * 
+ * Retrieves the list of patterns currently stored in the server and
+ * displays them in a table with a pager.
+ * 
+ * @return string containing the current list of patterns stored in the server
+ */
 function patterns_client_import_patterns_server() {
   // Retrieve current list of patterns in the server
   $patterns_list = _patterns_client_get_patterns_server_list(100000);
