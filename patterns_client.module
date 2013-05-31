@@ -76,28 +76,38 @@ function patterns_client_patterns_publish($pattern) {
 }
 
 function patterns_client_import_patterns_server() {
-  //Retrieve current list of patterns in the server
-  $patterns_list = _patterns_client_get_patterns_server_list(100);
- 
+  // Retrieve current list of patterns in the server
+  $patterns_list = _patterns_client_get_patterns_server_list(100000);
+  
   // Prepare header and rows to be themed as a table
   $header = array(
     array('data' => t('UUID')),
-    array('data' => t('Format')),
     array('data' => t('Title')),
     array('data' => t('Description')),
     array('data' => t('Author')),
+    array('data' => t('Format')),
     array('data' => t('File')),
   );
   foreach ($patterns_list as $pattern) {
     $rows[] = array(
         array('data' => $pattern['uuuid']),
-        array('data' => $pattern['format']),
         array('data' => $pattern['title']),
         array('data' => $pattern['description']),
         array('data' => $pattern['author']),
+        array('data' => $pattern['format']),
         array('data' => l(t('Download'), $pattern['download_url'])),
     );
   }
 
-  return theme('table', array('header' => $header, 'rows'=> $rows));
+  // We cannot use the defautl pager from the query, so we will need to divide the date in chunks
+  $per_page = 15;
+  // Initialize the pager
+  $current_page = pager_default_initialize(count($rows), $per_page);
+  // Split your list into page sized chunks
+  $chunks = array_chunk($rows, $per_page, TRUE);
+  // Show the appropriate items from the list
+  $output = theme('table', array('header' => $header, 'rows' => $chunks[$current_page]));
+  // Show the pager
+  $output .= theme('pager', array('quantity',count($rows)));
+  return $output;
 }
