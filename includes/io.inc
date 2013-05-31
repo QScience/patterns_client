@@ -240,14 +240,14 @@ function patterns_client_push_patterns($patterns) {
 }
 
 
-function _patterns_client_get_patterns_server_list() {
+function _patterns_client_get_patterns_server_list($limit) {
   // Get the current server
   $url = variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER);
   $friend = d2d_api_friend_get_by_url($url);
 
   // Prepare arguments for the call. In this case just the maximum number of patterns expected
   $post = array(
-      'limit' => '10',
+      'limit' => $limit,
   );
 
   // Send the request. We explode the result in two different steps
@@ -255,21 +255,17 @@ function _patterns_client_get_patterns_server_list() {
   $result = d2d_call_secure_rpc($friend, 'patterns_server_get_patterns_list', $post, $error_string);
   $result = d2d_explode($result);
 
-  // Display communitcation errors if any
+  // Display communication errors if any
   if (!is_null($result['error'])) {
     drupal_set_message(t('The Patterns server returned this response: @response', array('@response' => $result['error'])), 'error');
   }else{
+    //If everything is OK, return the results completely exploded
     $patterns_list = d2d_explode($result['return']);
+    $exploded_result = array();
     foreach ($patterns_list as $p) {
-      $pattern = d2d_explode($p);
-      echo '<p>';
-      echo '</br>PID: ' . $pattern['pid'];
-      echo '</br>UUID: ' . $pattern['uuuid'];
-      echo '</br>Title: ' . $pattern['title'];
-      echo '</br>Description: ' . $pattern['description'];
-      echo '</br>URL: ' . $pattern['download_url'];
-      echo '</p>';
+      $exploded_result[] = d2d_explode($p);
     }
+    return $exploded_result;
   }
 
 }

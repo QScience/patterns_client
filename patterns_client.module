@@ -32,8 +32,8 @@ function patterns_client_menu() {
   //Add new tab to list patterns stored in the server
   $items['admin/patterns/import/patterns-server'] = array(
       'title' => 'Patterns at Patterns Server',
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array('_patterns_client_get_patterns_server_list'),
+      'page callback' => 'patterns_client_import_patterns_server',
+      //'page arguments' => array('patterns_client_import_patterns_server'),
       'access arguments' => array('administer patterns'),
       'type' => MENU_LOCAL_TASK,
   );
@@ -73,4 +73,27 @@ function patterns_client_patterns_publish($pattern) {
   else {
     drupal_set_message(t('Automatic publishing of patterns not enabled.'), 'warning');
   }
+}
+
+function patterns_client_import_patterns_server() {
+  //Retrieve current list of patterns in the server
+  $patterns_list = _patterns_client_get_patterns_server_list(100);
+ 
+  // Prepare header and rows to be themed as a table
+  $header = array(
+    array('data' => t('UUID')),
+    array('data' => t('Title')),
+    array('data' => t('Description')),
+    array('data' => t('File')),
+  );
+  foreach ($patterns_list as $pattern) {
+    $rows[] = array(
+        array('data' => $pattern['uuuid']),
+        array('data' => $pattern['title']),
+        array('data' => $pattern['description']),
+        array('data' => l(t('Download'), $pattern['download_url'])),
+    );
+  }
+
+  return theme('table', array('header' => $header, 'rows'=> $rows));
 }
