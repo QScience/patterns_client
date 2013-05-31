@@ -82,15 +82,19 @@ function patterns_client_import_patterns_server() {
   // Prepare header and rows to be themed as a table
   $header = array(
     array('data' => t('UUID')),
+    array('data' => t('Format')),
     array('data' => t('Title')),
     array('data' => t('Description')),
+    array('data' => t('Author')),
     array('data' => t('File')),
   );
   foreach ($patterns_list as $pattern) {
     $rows[] = array(
         array('data' => $pattern['uuuid']),
+        array('data' => $pattern['format']),
         array('data' => $pattern['title']),
         array('data' => $pattern['description']),
+        array('data' => $pattern['author']),
         array('data' => l(t('Download'), $pattern['download_url'])),
     );
   }
