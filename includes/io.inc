@@ -306,7 +306,7 @@ function _patterns_client_fetch_server_pattern($pid)  {
   // Display communication errors if any
   if (!is_null($result['error'])) {
     drupal_set_message(t('The Patterns server returned this response: @response', array('@response' => $result['error'])), 'error');
-    return $pid . $result['error'];
+    return $result['error'];
   }else{
     //If everything is OK, return the results completely exploded
     /*$patterns_list = d2d_explode($result['return']);
@@ -314,6 +314,6 @@ function _patterns_client_fetch_server_pattern($pid)  {
     foreach ($patterns_list as $p) {
       $exploded_result[] = d2d_explode($p);
     }*/
-    return $pid . $result['error'];
+    return $result['return'];
   }
 }
