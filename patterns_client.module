@@ -36,6 +36,13 @@ function patterns_client_menu() {
       'access arguments' => array('administer patterns'),
       'type' => MENU_LOCAL_TASK,
   );
+  //Add new entry to fetch patterns from server (based on server PID)
+  $items['admin/patterns/import/patterns-server/fetch/%'] = array(
+      'page callback' => 'patterns_client_fetch_pattern',
+      'page arguments' => array(5),
+      'access arguments' => array('administer patterns'),
+      'type' => MENU_CALLBACK,
+  );
   return $items;
 }
 
@@ -83,25 +90,29 @@ function patterns_client_patterns_publish($pattern) {
  */
 function patterns_client_import_patterns_server() {
   // Retrieve current list of patterns in the server
-  $patterns_list = _patterns_client_get_patterns_server_list(100000);
+  $patterns_list = _patterns_client_get_patterns_server_list(1000);
   
   // Prepare header and rows to be themed as a table
   $header = array(
+    array('data' => t('PID (in the server)')),
     array('data' => t('UUID')),
     array('data' => t('Title')),
     array('data' => t('Description')),
     array('data' => t('Author')),
     array('data' => t('Format')),
     array('data' => t('File')),
+    array('data' => t('Fetch')),
   );
   foreach ($patterns_list as $pattern) {
     $rows[] = array(
+        array('data' => $pattern['pid']),
         array('data' => $pattern['uuuid']),
         array('data' => $pattern['title']),
         array('data' => $pattern['description']),
         array('data' => $pattern['author']),
         array('data' => $pattern['format']),
         array('data' => l(t('Download'), $pattern['download_url'])),
+        array('data' => l(t('Fetch'), 'admin/patterns/import/patterns-server/fetch/' . $pattern['pid'])),
     );
   }
 
@@ -116,4 +127,27 @@ function patterns_client_import_patterns_server() {
   // Show the pager
   $output .= theme('pager', array('quantity',count($rows)));
   return $output;
+}
+
+/**
+ * @TO-DO!
+ *
+ * Retrieves the list of patterns currently stored in the server and
+ * displays them in a table with a pager.
+ *
+ * @return string containing the current list of patterns stored in the server
+ */
+function patterns_client_fetch_pattern($pid) {
+  $pattern = _patterns_client_fetch_server_pattern($pid);
+  
+  //Call io function to retrieve the whole file from the server using the pid. 
+  // @TO-DO: Remember increase the downloads counter in the server as well
+  
+  //Parse the file and recover an object
+  
+  //Modify the object to include the Parent UUID in the hierarchy. Calculate a new PID and reassign it
+  
+  //Call save pattern. Check if the function will assign the PID automatically
+  
+  echo 'The requested pattern from the server is ' . $pattern;
 }
