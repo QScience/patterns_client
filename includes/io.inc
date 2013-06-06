@@ -7,6 +7,7 @@
 
 
 module_load_include('module', 'd2d');
+module_load_include('inc', 'patterns_client', 'includes/parenthood');
 
 function patterns_client_get_full_credentials($server, $user = NULL) {
 	$conf = variable_get(PATTERNS_CLIENT_CREDENTIALS, FALSE);
@@ -306,10 +307,14 @@ function _patterns_client_fetch_server_pattern($pid)  {
     return $result['error'];
   }else{
     //drupal_set_message(t('Patterns response @response', array('@response' => $result['return'])), 'status');
+    // Exploded the value and parse it to work with an object
     $pattern_info = d2d_explode($result['return']);
     $pattern = patterns_parser_parse($pattern_info['file'], $pattern_info['format']);
+    // Include the parent in the new pattern
+    $pattern = _patterns_client_add_parent($pattern, $pattern_info['uuuid']);
+    
     //drupal_set_message(t('Patterns response @response', array('@response' => $pattern_info['format'])), 'status');
-    drupal_set_message(t('Patterns response @response', array('@response' => json_encode($pattern))), 'status');
+    //drupal_set_message(t('Patterns response @response', array('@response' => $pattern_info['uuuid'])), 'status');
     
     return $pattern;
   }
