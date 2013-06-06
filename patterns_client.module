@@ -150,5 +150,6 @@ function patterns_client_fetch_pattern($pid) {
   
   //Call save pattern. Check if the function will assign the PID automatically
   
-  echo 'The requested pattern from the server is ' . $pattern;
+  //echo 'The requested pattern from the server is ' . $pattern;
+  drupal_goto('admin/patterns/import/patterns-server');
 }
