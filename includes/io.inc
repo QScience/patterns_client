@@ -287,6 +287,9 @@ function _patterns_client_get_patterns_server_list($limit) {
  * @return array List of patterns currently stored in the server
  */
 function _patterns_client_fetch_server_pattern($pid)  {
+
+  global $user;
+  
   // Get the current server
   $url = variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER);
   $friend = d2d_api_friend_get_by_url($url);
@@ -306,16 +309,11 @@ function _patterns_client_fetch_server_pattern($pid)  {
     drupal_set_message(t('The Patterns server returned this response: @response', array('@response' => $result['error'])), 'error');
     return $result['error'];
   }else{
-    //drupal_set_message(t('Patterns response @response', array('@response' => $result['return'])), 'status');
     // Exploded the value and parse it to work with an object
     $pattern_info = d2d_explode($result['return']);
     $pattern = patterns_parser_parse($pattern_info['file'], $pattern_info['format']);
     // Include the parent in the new pattern
     $pattern = _patterns_client_add_parent($pattern, $pattern_info['uuuid']);
-    
-    //drupal_set_message(t('Patterns response @response', array('@response' => $pattern_info['format'])), 'status');
-    //drupal_set_message(t('Patterns response @response', array('@response' => $pattern_info['uuuid'])), 'status');
-    
-    return $pattern;
+    return _patterns_io_save_pattern($pattern, $pattern_info['uuuid'], $pattern_info['format'], NULL, NULL, $user->name);
   }
 }

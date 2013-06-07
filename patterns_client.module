@@ -131,25 +131,20 @@ function patterns_client_import_patterns_server() {
 }
 
 /**
- * @TO-DO!
- *
- * Retrieves the list of patterns currently stored in the server and
- * displays them in a table with a pager.
- *
- * @return string containing the current list of patterns stored in the server
+ * 
+ * Fetches a pattern from the server and adapt it to include the
+ * current user and the parenthood relationship.
+ * 
+ * @param string $pid  Pattern ID in the server
  */
 function patterns_client_fetch_pattern($pid) {
-  $pattern = _patterns_client_fetch_server_pattern($pid);
-  
-  //Call io function to retrieve the whole file from the server using the pid. 
-  // @TO-DO: Remember increase the downloads counter in the server as well
-  
-  //Parse the file and recover an object
-  
-  //Modify the object to include the Parent UUID in the hierarchy. Calculate a new PID and reassign it
-  
-  //Call save pattern. Check if the function will assign the PID automatically
-  
-  //echo 'The requested pattern from the server is ' . $pattern;
+  // Retrieve new pattern already modified to include the parent
+  $result = _patterns_client_fetch_server_pattern($pid);
+
+  // Display a message according to the status return by _patterns_io_save_pattern()
+  if (!empty($result['msg'])) {
+    $type = ($result['status'] == PATTERNS_SUCCESS) ? 'status' : 'error';
+    drupal_set_message($result['msg'], $type);
+  }
   drupal_goto('admin/patterns/import/patterns-server');
 }
