@@ -355,12 +355,12 @@ function _patterns_client_search_server_pattern($token, $type)  {
     drupal_set_message(t('The Patterns server returned this response: @response', array('@response' => $result['error'])), 'error');
     return $result['error'];
   }else{
-    // Exploded the value and parse it to work with an object
-    $query = d2d_explode($result['return']);
-    /*$pattern = patterns_parser_parse($pattern_info['file'], $pattern_info['format']);
-    // Include the parent in the new pattern
-    $pattern = _patterns_client_add_parent($pattern, $pattern_info['uuuid']);
-    return _patterns_io_save_pattern($pattern, $pattern_info['uuuid'], $pattern_info['format'], NULL, NULL, $user->name);*/
-    return $query['number_results'];
+    //If everything is OK, return the results completely exploded
+    $patterns_list = d2d_explode($result['return']);
+    $exploded_result = array();
+    foreach ($patterns_list as $p) {
+      $exploded_result[] = d2d_explode($p);
+    }
+    return $exploded_result;
   }
 }
