@@ -29,9 +29,10 @@ function patterns_client_menu() {
   // to create an XML-RPC client with Drupal.
   
   //Add new tab in Patterns import to list patterns stored in the server
-  $items['admin/patterns/import/patterns-server'] = array(
+  $items['admin/patterns/import/patterns-server/search'] = array(
       'title' => 'Patterns at Patterns Server',
-      'page callback' => 'patterns_client_import_patterns_server',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('patterns_client_search_form'),
       'access arguments' => array('administer patterns'),
       'type' => MENU_LOCAL_TASK,
   );
@@ -43,13 +44,13 @@ function patterns_client_menu() {
       'type' => MENU_CALLBACK,
   );
   //Add new tab in Patterns import to search patterns stored in the server
-  $items['admin/patterns/import/patterns-server/search/%/%'] = array(
+  /*$items['admin/patterns/import/patterns-server/search/%/%'] = array(
       'title' => 'Patterns at Patterns Server',
       'page callback' => 'patterns_client_search_patterns_server',
       'page arguments' => array(5, 6),
       'access arguments' => array('administer patterns'),
       'type' => MENU_LOCAL_TASK,
-  );
+  );*/
   return $items;
 }
 
@@ -88,54 +89,54 @@ function patterns_client_patterns_publish($pattern) {
   }
 }
 
-/**
- * 
- * Retrieves the list of patterns currently stored in the server and
- * displays them in a table with a pager.
- * 
- * @return string containing the current list of patterns stored in the server
- */
-function patterns_client_import_patterns_server() {
-  // Retrieve current list of patterns in the server
-  $patterns_list = _patterns_client_get_patterns_server_list(1000);
+// /**
+//  * 
+//  * Retrieves the list of patterns currently stored in the server and
+//  * displays them in a table with a pager.
+//  * 
+//  * @return string containing the current list of patterns stored in the server
+//  */
+// function patterns_client_import_patterns_server() {
+//   // Retrieve current list of patterns in the server
+//   $patterns_list = _patterns_client_get_patterns_server_list(1000);
   
-  // Prepare header and rows to be themed as a table
-  //Added Attributes below to allow the link to open in a separate window
-  $header = array(
-    array('data' => t('PID (in the server)')),
-    array('data' => t('UUID')),
-    array('data' => t('Title')),
-    array('data' => t('Description')),
-    array('data' => t('Author')),
-    array('data' => t('Format')),
-    array('data' => t('Preview')),
-    array('data' => t('Fetch')),
-  );
-  foreach ($patterns_list as $pattern) {
-    $rows[] = array(
-        array('data' => $pattern['pid']),
-        array('data' => $pattern['uuuid']),
-        array('data' => $pattern['title']),
-        array('data' => $pattern['description']),
-        array('data' => $pattern['author']),
-        array('data' => $pattern['format']),
-        array('data' => l(t('Preview'), $pattern['view_url'])),
-        array('data' => l(t('Fetch'), 'admin/patterns/import/patterns-server/fetch/' . $pattern['pid'])),
-    );
-  }
+//   // Prepare header and rows to be themed as a table
+//   //Added Attributes below to allow the link to open in a separate window
+//   $header = array(
+//     array('data' => t('PID (in the server)')),
+//     array('data' => t('UUID')),
+//     array('data' => t('Title')),
+//     array('data' => t('Description')),
+//     array('data' => t('Author')),
+//     array('data' => t('Format')),
+//     array('data' => t('Preview')),
+//     array('data' => t('Fetch')),
+//   );
+//   foreach ($patterns_list as $pattern) {
+//     $rows[] = array(
+//         array('data' => $pattern['pid']),
+//         array('data' => $pattern['uuuid']),
+//         array('data' => $pattern['title']),
+//         array('data' => $pattern['description']),
+//         array('data' => $pattern['author']),
+//         array('data' => $pattern['format']),
+//         array('data' => l(t('Preview'), $pattern['view_url'])),
+//         array('data' => l(t('Fetch'), 'admin/patterns/import/patterns-server/fetch/' . $pattern['pid'])),
+//     );
+//   }
 
-  // We cannot use the default pager from the query, so we will need to divide the date in chunks
-  $per_page = 15;
-  // Initialize the pager
-  $current_page = pager_default_initialize(count($rows), $per_page);
-  // Split your list into page sized chunks
-  $chunks = array_chunk($rows, $per_page, TRUE);
-  // Show the appropriate items from the list
-  $output = theme('table', array('header' => $header, 'rows' => $chunks[$current_page]));
-  // Show the pager
-  $output .= theme('pager', array('quantity',count($rows)));
-  return $output;
-}
+//   // We cannot use the default pager from the query, so we will need to divide the date in chunks
+//   $per_page = 15;
+//   // Initialize the pager
+//   $current_page = pager_default_initialize(count($rows), $per_page);
+//   // Split your list into page sized chunks
+//   $chunks = array_chunk($rows, $per_page, TRUE);
+//   // Show the appropriate items from the list
+//   $output = theme('table', array('header' => $header, 'rows' => $chunks[$current_page]));
+//   // Show the pager
+//   $output .= theme('pager', array('quantity',count($rows)));
+//   return $output;
+// }
 
 /**
  * 
@@ -164,19 +165,90 @@ function patterns_client_fetch_pattern($pid) {
  *
  * @param string $pid  Pattern ID in the server
  */
-function patterns_client_search_patterns_server($token, $type) {
-  // Retrieve new pattern already modified to include the parent
-  $patterns_list = _patterns_client_search_server_pattern($token, $type);
+// /* function patterns_client_search_patterns_server($token, $type) {
+//   // Retrieve new pattern already modified to include the parent
+//   $patterns_list = _patterns_client_search_server_pattern($token, $type);
 
-  // Display a message according to the status return by _patterns_io_save_pattern()
-  /*if (!empty($result['msg'])) {
-    $type = ($result['status'] == PATTERNS_SUCCESS) ? 'status' : 'error';
-    drupal_set_message($result['msg'], $type);
-  }*/
-  //drupal_set_message('We have found ' . $result . ' patterns with these criteria', 'status');
-  //drupal_goto('admin/patterns/import/patterns-server');
-  // Retrieve current list of patterns in the server
-  //$patterns_list = _patterns_client_get_patterns_server_list(1000);
+//   // Display a message according to the status return by _patterns_io_save_pattern()
+//   /*if (!empty($result['msg'])) {
+//     $type = ($result['status'] == PATTERNS_SUCCESS) ? 'status' : 'error';
+//     drupal_set_message($result['msg'], $type);
+//   }*/
+//   //drupal_set_message('We have found ' . $result . ' patterns with these criteria', 'status');
+//   //drupal_goto('admin/patterns/import/patterns-server');
+//   // Retrieve current list of patterns in the server
+//   //$patterns_list = _patterns_client_get_patterns_server_list(1000);
+  
+//   // Prepare header and rows to be themed as a table
+//   //Added Attributes below to allow the link to open in a separate window
+//   $header = array(
+//       array('data' => t('PID (in the server)')),
+//       array('data' => t('UUID')),
+//       array('data' => t('Title')),
+//       array('data' => t('Description')),
+//       array('data' => t('Author')),
+//       array('data' => t('Format')),
+//       array('data' => t('Preview')),
+//       array('data' => t('Fetch')),
+//   );
+//   foreach ($patterns_list as $pattern) {
+//     $rows[] = array(
+//         array('data' => $pattern['pid']),
+//         array('data' => $pattern['uuuid']),
+//         array('data' => $pattern['title']),
+//         array('data' => $pattern['description']),
+//         array('data' => $pattern['author']),
+//         array('data' => $pattern['format']),
+//         array('data' => l(t('Preview'), $pattern['view_url'])),
+//         array('data' => l(t('Fetch'), 'admin/patterns/import/patterns-server/fetch/' . $pattern['pid'])),
+//     );
+//   }
+  
+//   // We cannot use the default pager from the query, so we will need to divide the date in chunks
+//   $per_page = 15;
+//   // Initialize the pager
+//   $current_page = pager_default_initialize(count($rows), $per_page);
+//   // Split your list into page sized chunks
+//   $chunks = array_chunk($rows, $per_page, TRUE);
+//   // Show the appropriate items from the list
+//   $output = theme('table', array('header' => $header, 'rows' => $chunks[$current_page]));
+//   // Show the pager
+//   $output .= theme('pager', array('quantity',count($rows)));
+//   return $output;
+// } */
+
+function patterns_client_search_form($form, &$form_state) {
+  $form['patterns_search']= array(
+      '#type' => 'container',
+      '#attributes' => array('class' => array('container-inline')),
+  
+  );
+  $form['patterns_search']['search'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Search'),
+      '#size' => 15,
+      '#attributes' => array('title' => t('Enter the terms you wish to search for.'), 'class' => array('container-inline')),
+  
+  );
+  $form['patterns_search']['selected'] = array(
+      '#type' => 'select',
+      '#title' => t('Selected'),
+      '#title_display' => 'invisible',
+      '#options' => array(
+          0 => t('Title'),
+          1 => t('Description'),
+          2 => t('Author'),
+          3 => t('UUID'),
+          4 => t('Pid'),
+      ),
+  );
+  
+  $patterns_list  = array();
+  if (!isset($form_state['input']['patterns_list'])) {
+    $patterns_list = _patterns_client_get_patterns_server_list(15);
+  }else{
+    $patterns_list = $form_state['input']['patterns_list'];
+  }
   
   // Prepare header and rows to be themed as a table
   //Added Attributes below to allow the link to open in a separate window
@@ -202,16 +274,25 @@ function patterns_client_search_patterns_server($token, $type) {
         array('data' => l(t('Fetch'), 'admin/patterns/import/patterns-server/fetch/' . $pattern['pid'])),
     );
   }
+  $form['table'] = array(
+      '#theme' => 'table',
+      '#header' => $header,
+      '#rows' => $rows,
+      '#empty' => t('Empty Rows')
+  );
   
-  // We cannot use the default pager from the query, so we will need to divide the date in chunks
-  $per_page = 15;
-  // Initialize the pager
-  $current_page = pager_default_initialize(count($rows), $per_page);
-  // Split your list into page sized chunks
-  $chunks = array_chunk($rows, $per_page, TRUE);
-  // Show the appropriate items from the list
-  $output = theme('table', array('header' => $header, 'rows' => $chunks[$current_page]));
-  // Show the pager
-  $output .= theme('pager', array('quantity',count($rows)));
-  return $output;
+  $form['patterns_search']['actions'] = array('#type' => 'actions');
+  $form['patterns_search']['actions']['submit'] = array('#type' => 'submit', '#value' => t('Search'));
+  $form['patterns_search']['#submit'][] = 'patterns_server_search_form_submit';
+  
+  return $form;
+}
+
+function patterns_client_search_form_submit($form, &$form_state) {
+
+  // Rebuild the form populating with the values from the query
+  $token = $form_state['values']['search'];
+  $type = $form_state['values']['selected'];
+  $form_state['input']['patterns_list'] = _patterns_client_search_server_pattern($token, $type);
+  $form_state['rebuild'] = true;
 }
