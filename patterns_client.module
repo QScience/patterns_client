@@ -8,7 +8,6 @@
 module_load_include('inc', 'patterns_client', 'includes/constants');
 module_load_include('inc', 'patterns_client', 'includes/config');
 module_load_include('inc', 'patterns_client', 'includes/io');
-//module_load_include('inc', 'patterns_client', 'includes/rpc');
 
 /**
  * Implements hook_help().
@@ -42,6 +41,13 @@ function patterns_client_menu() {
       'page arguments' => array(5),
       'access arguments' => array('administer patterns'),
       'type' => MENU_CALLBACK,
+  );
+  //Add new tab in Patterns import to search patterns stored in the server
+  $items['admin/patterns/import/patterns-server/search/%'] = array(
+      'title' => 'Patterns at Patterns Server',
+      'page callback' => 'patterns_client_search_patterns_server',
+      'access arguments' => array('administer patterns'),
+      'type' => MENU_LOCAL_TASK,
   );
   return $items;
 }
@@ -117,7 +123,7 @@ function patterns_client_import_patterns_server() {
     );
   }
 
-  // We cannot use the defautl pager from the query, so we will need to divide the date in chunks
+  // We cannot use the default pager from the query, so we will need to divide the date in chunks
   $per_page = 15;
   // Initialize the pager
   $current_page = pager_default_initialize(count($rows), $per_page);
