@@ -46,6 +46,7 @@ function patterns_client_menu() {
   $items['admin/patterns/import/patterns-server/search/%'] = array(
       'title' => 'Patterns at Patterns Server',
       'page callback' => 'patterns_client_search_patterns_server',
+      'page arguments' => array(5),
       'access arguments' => array('administer patterns'),
       'type' => MENU_LOCAL_TASK,
   );
@@ -152,5 +153,26 @@ function patterns_client_fetch_pattern($pid) {
     $type = ($result['status'] == PATTERNS_SUCCESS) ? 'status' : 'error';
     drupal_set_message($result['msg'], $type);
   }
+  drupal_goto('admin/patterns/import/patterns-server');
+}
+
+/**
+ * @TO-DO: Document the function properly
+ *
+ * Fetches a pattern from the server and adapt it to include the
+ * current user and the parenthood relationship.
+ *
+ * @param string $pid  Pattern ID in the server
+ */
+function patterns_client_search_patterns_server($token, $type) {
+  // Retrieve new pattern already modified to include the parent
+  $result = _patterns_client_search_server_pattern('delete', "0");
+
+  // Display a message according to the status return by _patterns_io_save_pattern()
+  /*if (!empty($result['msg'])) {
+    $type = ($result['status'] == PATTERNS_SUCCESS) ? 'status' : 'error';
+    drupal_set_message($result['msg'], $type);
+  }*/
+  drupal_set_message('We have found ' . $result . ' patterns with these criteria', 'status');
   drupal_goto('admin/patterns/import/patterns-server');
 }
