@@ -43,12 +43,12 @@ function patterns_client_menu() {
       'type' => MENU_CALLBACK,
   );
   //Add new tab in Patterns import to search patterns stored in the server
-  $items['admin/patterns/import/patterns-server/search/%'] = array(
+  $items['admin/patterns/import/patterns-server/search/%/%'] = array(
       'title' => 'Patterns at Patterns Server',
       'page callback' => 'patterns_client_search_patterns_server',
-      'page arguments' => array(5),
+      'page arguments' => array(5, 6),
       'access arguments' => array('administer patterns'),
-      'type' => MENU_LOCAL_TASK,
+      'type' => MENU_CALLBACK,
   );
   return $items;
 }
@@ -166,7 +166,7 @@ function patterns_client_fetch_pattern($pid) {
  */
 function patterns_client_search_patterns_server($token, $type) {
   // Retrieve new pattern already modified to include the parent
-  $result = _patterns_client_search_server_pattern('delete', "0");
+  $result = _patterns_client_search_server_pattern($token, $type);
 
   // Display a message according to the status return by _patterns_io_save_pattern()
   /*if (!empty($result['msg'])) {
