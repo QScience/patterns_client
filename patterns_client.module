@@ -94,7 +94,7 @@ function patterns_client_fetch_pattern($pid) {
     $type = ($result['status'] == PATTERNS_SUCCESS) ? 'status' : 'error';
     drupal_set_message($result['msg'], $type);
   }
-  drupal_goto('admin/patterns/import/patterns-server');
+  drupal_goto('admin/patterns/import/patterns-server/search');
 }
 
 /**
