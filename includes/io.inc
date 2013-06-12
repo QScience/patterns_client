@@ -213,18 +213,7 @@ function patterns_client_push_patterns($patterns) {
     'credentials' => $imploded_credentials,
     'patterns' => $imploded_patterns,
   );
-  
-  
 
-  // do we need this??
-  //$imploded_post = d2d_implode($post);
-  //
-  //if ($imploded_post === FALSE) {
-  //  drupal_set_message(t('Internal error while collecting patterns to be sent.'), 'error'); 
-  //  return FALSE;
-  //}
-  ///
-  
   $error_string = '';  
   
   $friend = d2d_api_friend_get_by_url($url);
@@ -243,7 +232,7 @@ function patterns_client_push_patterns($patterns) {
 /**
  * 
  * Performs a remote call to the Patterns Server using D2D in order
- * to retrieve the list of Patterns stored in the server sorted by its 
+ * to retrieve the list of all the Patterns stored in the server sorted by its 
  * timestamp descendingly.
  * 
  * @param int $limit
@@ -281,7 +270,7 @@ function _patterns_client_get_patterns_server_list($limit) {
 /**
  * 
  * Performs a remote call to the Patterns Server using D2D in order
- * to retrieve the patter file and its type, and returns a Pattern object
+ * to retrieve the pattern file and its type, and returns a Pattern object.
  *
  * @param int $limit
  * @return array List of patterns currently stored in the server
@@ -322,13 +311,12 @@ function _patterns_client_fetch_server_pattern($pid)  {
 }
 
 /**
- * @TO-DO: Document function properly
- *
  * Performs a remote call to the Patterns Server using D2D in order
- * to retrieve the patter file and its type, and returns a Pattern object
- *
- * @param int $limit
- * @return array List of patterns currently stored in the server
+ * to retrieve a set of patterns that matches the given criteria.
+ * 
+ * @param string $token  Token to perform the search.
+ * @param string $type  Field in which the search will be performed.
+ * @return array  List of strings matching the giving criteria.
  */
 function _patterns_client_search_server_pattern($token, $type)  {
 
