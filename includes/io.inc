@@ -305,7 +305,7 @@ function _patterns_client_fetch_server_pattern($pid)  {
     $pattern_info = d2d_explode($result['return']);
     $pattern = patterns_parser_parse($pattern_info['file'], $pattern_info['format']);
     // Include the parent in the new pattern
-    $pattern = _patterns_client_add_parent($pattern, $pattern_info['uuuid']);
+    $pattern = patterns_parenthood_add_parent($pattern, $pattern_info['uuuid']);
     return _patterns_io_save_pattern($pattern, $pattern_info['uuuid'], $pattern_info['format'], NULL, NULL, $user->name);
   }
 }
