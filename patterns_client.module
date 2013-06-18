@@ -52,7 +52,7 @@ function patterns_client_menu() {
   // Add new entry to fetch patterns from server (based on server PID)
   $items['admin/patterns/remote/fetch/%'] = array(
       'page callback' => 'patterns_client_fetch_pattern',
-      'page arguments' => array(5),
+      'page arguments' => array(4),
       'access arguments' => array('administer patterns'),
       'type' => MENU_CALLBACK,
   );
@@ -263,5 +263,5 @@ function patterns_client_search_form_submit($form, &$form_state) {
  * @param $form_state
  */
 function patterns_client_search_form_view_all_submit($form, &$form_state) {
-  drupal_goto('admin/patterns/import/patterns-server/search');
+  drupal_goto('admin/patterns/remote/search');
 }
