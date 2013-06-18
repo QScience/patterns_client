@@ -24,16 +24,33 @@ function patterns_client_help($path,$arg) {
  * Implements hook_menu().
  */
 function patterns_client_menu() {
-  //Add new tab in Patterns import to search patterns stored in the server
-  $items['admin/patterns/import/patterns-server/search'] = array(
-      'title' => 'Patterns at Patterns Server',
+  // Add new tab in Patterns main menu to gather all remote operations
+  $items['admin/patterns/remote'] = array(
+      'title' => 'Remote',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('patterns_client_search_form'),
+      'access arguments' => array('administer patterns'),
+      'type' => MENU_LOCAL_TASK,
+      'weight' => -1,
+  );
+  // Add new sub tab with search and list as default
+  $items['admin/patterns/remote/search'] = array(
+      'title' => 'Patterns at Server',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('patterns_client_search_form'),
+      'access arguments' => array('administer patterns'),
+      'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
+  // Add new sub tab for the subscriptions function
+  $items['admin/patterns/remote/subscriptions'] = array(
+      'title' => 'Subscriptions',
       'page callback' => 'drupal_get_form',
       'page arguments' => array('patterns_client_search_form'),
       'access arguments' => array('administer patterns'),
       'type' => MENU_LOCAL_TASK,
   );
-  //Add new entry to fetch patterns from server (based on server PID)
-  $items['admin/patterns/import/patterns-server/fetch/%'] = array(
+  // Add new entry to fetch patterns from server (based on server PID)
+  $items['admin/patterns/remote/fetch/%'] = array(
       'page callback' => 'patterns_client_fetch_pattern',
       'page arguments' => array(5),
       'access arguments' => array('administer patterns'),
@@ -65,6 +82,11 @@ function patterns_client_menu_alter(&$items) {
     'access arguments' => array('administer patterns'),
     'type' => MENU_LOCAL_TASK,
     'weight' => 9,
+  );
+  $items['admin/patterns/list'] = array(
+    'title' => 'Local',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
   );
   return $items;
 }
@@ -177,7 +199,7 @@ function patterns_client_search_form($form, &$form_state) {
           array('data' => $pattern['author']),
           array('data' => $pattern['format']),
           array('data' => l(t('Preview'), $pattern['view_url'])),
-          array('data' => l(t('Fetch'), 'admin/patterns/import/patterns-server/fetch/' . $pattern['pid'])),
+          array('data' => l(t('Fetch'), 'admin/patterns/remote/fetch/' . $pattern['pid'])),
       );
     }
     
