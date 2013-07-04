@@ -7,7 +7,7 @@
 
 
 module_load_include('module', 'd2d');
-module_load_include('inc', 'patterns_client', 'includes/parenthood');
+module_load_include('inc', 'patterns_client', 'includes/history');
 
 function patterns_client_get_full_credentials($server, $user = NULL) {
 	$conf = variable_get(PATTERNS_CLIENT_CREDENTIALS, FALSE);
@@ -304,8 +304,8 @@ function _patterns_client_fetch_server_pattern($pid)  {
     // Exploded the value and parse it to work with an object
     $pattern_info = d2d_explode($result['return']);
     $pattern = patterns_parser_parse($pattern_info['file'], $pattern_info['format']);
-    // Include the parent in the new pattern
-    $pattern = patterns_parenthood_add_parent($pattern, $pattern_info['uuuid']);
+    //Add history header including all the pulled pattern as ancestor
+    $pattern = patterns_history_add_header($pattern, 'pull', $url, array($pattern_info['uuuid']));
     return _patterns_io_save_pattern($pattern, $pattern_info['uuuid'], $pattern_info['format'], NULL, NULL, $user->name);
   }
 }
