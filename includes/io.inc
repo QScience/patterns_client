@@ -352,3 +352,18 @@ function _patterns_client_search_server_pattern($token, $type)  {
     return $exploded_result;
   }
 }
+
+/**
+ * 
+ * Return the number of Patterns in the client already stored with the current UUUID.
+ * Although the UUUID is generated randomly and is unique, there could be cases in which
+ * it could be manipulated manually and the DB currently does not hold any UNIQUE constraint
+ * for this parameter, therefore we return the total number instead of a boolean value for the moment.
+ * 
+ * @param string $uuuid  ID to be checked
+ * @return Number of patterns with the given UUUID
+ */
+function _patterns_client_row_count_uuuid($uuuid) {
+  $return = db_query("SELECT p.uuuid FROM {patterns} p WHERE p.uuuid = :uuuid", array(':uuuid' => $uuuid));
+  return $return->rowCount();
+}
