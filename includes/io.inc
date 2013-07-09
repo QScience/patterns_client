@@ -306,7 +306,8 @@ function _patterns_client_fetch_server_pattern($pid)  {
     $pattern = patterns_parser_parse($pattern_info['file'], $pattern_info['format']);
     //Add history header including all the pulled pattern as ancestor
     $pattern = patterns_history_add_header($pattern, 'pull', $url, array($pattern_info['uuuid']));
-    return _patterns_io_save_pattern($pattern, 'clone_' . $pattern_info['uuuid'], $pattern_info['format'], NULL, NULL, $user->name, $pattern_info['uuuid']);
+    return _patterns_io_save_pattern($pattern, date_timestamp_get(date_create()), 
+      $pattern_info['format'], NULL, NULL, $user->name, $pattern_info['uuuid']);
   }
 }
 
