@@ -254,7 +254,10 @@ function _patterns_client_get_patterns_server_list($limit) {
   $result = d2d_explode($result);
 
   // Display communication errors if any
-  if (!is_null($result['error'])) {
+  if (!$result) {
+    drupal_set_message(t('No response from the server. Are you friends with it?'), 'warning');
+  }
+  elseif (!is_null($result['error'])) {
     drupal_set_message(t('The Patterns server returned this response: @response', array('@response' => $result['error'])), 'error');
   }else{
     //If everything is OK, return the results completely exploded

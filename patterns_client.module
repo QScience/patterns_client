@@ -212,7 +212,9 @@ function patterns_client_search_form($form, &$form_state) {
 
   }else{
     // Display a message to inform about no results found
-    drupal_set_message(t('No patterns matched the given criteria'), 'status');
+    if (isset($patterns_list)) {
+      drupal_set_message(t('No patterns matched the given criteria'), 'status');
+    }
   }
  
   return $form;
