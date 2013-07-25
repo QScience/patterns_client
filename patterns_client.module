@@ -198,7 +198,7 @@ function patterns_client_search_form($form, &$form_state) {
           array('data' => $pattern['description']),
           array('data' => $pattern['author']),
           array('data' => $pattern['format']),
-          array('data' => l(t('Preview'), $pattern['view_url'])),
+          array('data' => l(t('Preview'), $pattern['view_url'], array('attributes'=>array('target'=>'blank')))),
           array('data' => (_patterns_client_row_count_uuuid($pattern['uuuid']) > 0) ? t('Already pulled'): l(t('Pull'), 'admin/patterns/remote/fetch/' . $pattern['pid'])),
       );
     }
