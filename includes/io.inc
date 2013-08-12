@@ -58,7 +58,7 @@ function patterns_client_register_user_on_server($url, $user, $pwd, $email) {
 	
 	// send the request
 	$error_string = '';  
-	$token = d2d_call_secure_rpc($friend, 'patterns_server_register_client', $post, $error_string);
+	$token = d2d_call_secure_rpc($friend, 'patternentity_register_client', $post, $error_string);
 	
 	// Unknown Error
   if (is_null($token)) {
@@ -100,7 +100,7 @@ function patterns_client_link_user_on_server($url, $user, $pwd) {
   
 	// send the request
 	$error_string = '';  
-	$result = d2d_call_secure_rpc($friend, 'patterns_server_link_client', $post, $error_string);
+	$result = d2d_call_secure_rpc($friend, 'patternentity_link_client', $post, $error_string);
 	
 	// Unknown Error
   if (is_null($result)) {
@@ -218,7 +218,7 @@ function patterns_client_push_patterns($patterns) {
   
   $friend = d2d_api_friend_get_by_url($url);
   
-  $res = d2d_call_secure_rpc($friend, 'patterns_server_publish_patterns', $post, $error_string);
+  $res = d2d_call_secure_rpc($friend, 'patternentity_publish_patterns', $post, $error_string);
   
   if ($res === FALSE) {
     drupal_set_message(check_plain($url) . ' - ' . check_plain($error_string), 'error');
@@ -250,7 +250,7 @@ function _patterns_client_get_patterns_server_list($limit) {
 
   // Send the request. We explode the result in two different steps
   $error_string = '';
-  $result = d2d_call_secure_rpc($friend, 'patterns_server_get_patterns_list', $post, $error_string);
+  $result = d2d_call_secure_rpc($friend, 'patternentity_get_patterns_list', $post, $error_string);
   $result = d2d_explode($result);
 
   // Display communication errors if any
@@ -293,7 +293,7 @@ function _patterns_client_fetch_server_pattern($pid)  {
 
   // Send the request. We explode the result in two different steps
   $error_string = '';
-  $result = d2d_call_secure_rpc($friend, 'patterns_server_fetch_pattern', $post, $error_string);
+  $result = d2d_call_secure_rpc($friend, 'patternentity_fetch_pattern', $post, $error_string);
   $result = d2d_explode($result);
 
   // Display communication errors if any
@@ -335,7 +335,7 @@ function _patterns_client_search_server_pattern($token, $type)  {
 
   // Send the request. We explode the result in two different steps
   $error_string = '';
-  $result = d2d_call_secure_rpc($friend, 'patterns_server_search', $post, $error_string);
+  $result = d2d_call_secure_rpc($friend, 'patternentity_search', $post, $error_string);
   $result = d2d_explode($result);
 
   // Display communication errors if any
