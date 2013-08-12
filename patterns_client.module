@@ -151,10 +151,10 @@ function patterns_client_search_form($form, &$form_state) {
       '#title_display' => 'invisible',
       '#options' => array(
           0 => t('Title'),
-          1 => t('Description'),
+          1 => t('Category'),
           2 => t('Author'),
           3 => t('UUID'),
-          4 => t('Pid'),
+          //4 => t('Pid'),
       ),
   );
   
@@ -234,8 +234,8 @@ function patterns_client_search_form_validate($form, &$form_state) {
   if ($form_state['values']['search'] == '') {
     form_set_error('search', t('Please enter some keywords.'));
   }
-  if ($form_state['values']['selected'] < 0 || $form_state['values']['selected']> 4) {
-    form_set_error('selected', t('Type should be an integer value in the range 0-4.'));
+  if ($form_state['values']['selected'] < 0 || $form_state['values']['selected']> 3) {
+    form_set_error('selected', t('Type should be an integer value in the range 0-3.'));
   }
 }
 
