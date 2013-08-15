@@ -4,6 +4,9 @@
  * Install, uninstall functions for the Patterns Server module
  */
 
+/**
+ * Implements hook_unistall().
+ */
 function patterns_client_uninstall() {
   variable_del('patterns_client_auto_publish');
   variable_del('patterns_client_credentials');
