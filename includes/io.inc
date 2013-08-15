@@ -10,140 +10,135 @@ module_load_include('module', 'd2d');
 module_load_include('inc', 'patterns_client', 'includes/history');
 
 function patterns_client_get_full_credentials($server, $user = NULL) {
-	$conf = variable_get(PATTERNS_CLIENT_CREDENTIALS, FALSE);
-	if (!$conf || empty($conf[$server])) return FALSE;
-	
-	if (!is_null($user) && $conf[$server]['user'] != $user) return FALSE;
-	
-	return $conf[$server];
-	
+  $conf = variable_get(PATTERNS_CLIENT_CREDENTIALS, FALSE);
+  
+  if (!$conf || empty($conf[$server])) return FALSE;
+
+  if (!is_null($user) && $conf[$server]['user'] != $user) return FALSE;
+
+  return $conf[$server];
 }
 
 function patterns_client_get_credentials($server, $user = NULL) {
-	$conf = patterns_client_get_full_credentials($server, $user);
-	if (!$conf) return FALSE;
-	
-	return array(
-		'user' => $conf['user'],
-		'pwd' => $conf['token'],
-	);
+  $conf = patterns_client_get_full_credentials($server, $user);
+  if (!$conf) return FALSE;
+
+  return array(
+    'user' => $conf['user'],
+    'pwd' => $conf['token'],
+  );
 }
 
 function patterns_client_update_credentials($server, $user, $token, $email) {
-	$current = variable_get(PATTERNS_CLIENT_CREDENTIALS, array());
-	$current[$server] = array(
-		'user' => $user,
-		'token' => $token,
-		'email' => $email,
-	);
-	variable_set(PATTERNS_CLIENT_CREDENTIALS, $current);
+  $current = variable_get(PATTERNS_CLIENT_CREDENTIALS, array());
+  $current[$server] = array(
+    'user' => $user,
+    'token' => $token,
+    'email' => $email,
+  );
+  variable_set(PATTERNS_CLIENT_CREDENTIALS, $current);
 }
 
 
 function patterns_client_is_user_registered_on_server($server, $user = NULL) {
   if (empty($server)) return FALSE;
   $credentials = patterns_client_get_credentials($server, $user);
-  return $credentials ? TRUE : FALSE;  	
+  return $credentials ? TRUE : FALSE;
 }
 
 function patterns_client_register_user_on_server($url, $user, $pwd, $email) {
-	
-	$friend = d2d_api_friend_get_by_url($url);
-	
-	$post = array(
-		'user' => $user,
-		'pwd' => $pwd,
-		'email' => $email,
-	);
-	
-	// send the request
-	$error_string = '';  
-	$token = d2d_call_secure_rpc($friend, 'patterns_server_register_client', $post, $error_string);
-	
-	// Unknown Error
+  $friend = d2d_api_friend_get_by_url($url);
+  
+  $post = array(
+   'user' => $user,
+   'pwd' => $pwd,
+   'email' => $email,
+  );
+
+  // Send the request
+  $error_string = '';  
+  $token = d2d_call_secure_rpc($friend, 'patterns_server_register_client', $post, $error_string);
+
+  // Unknown Error
   if (is_null($token)) {
-	  drupal_set_message(check_plain($url) . ' - ' . t('Unknown error'), 'error');
+    drupal_set_message(check_plain($url) . ' - ' . t('Unknown error'), 'error');
   }
   
-	// Communication Error
-	else if ($token === FALSE) {
-	  drupal_set_message(check_plain($url) . ' - ' . check_plain($error_string), 'error');
+  // Communication Error
+  elseif ($token === FALSE) {
+    drupal_set_message(check_plain($url) . ' - ' . check_plain($error_string), 'error');
   }
-  
+
   // Error while saving the user (e.g. already existing)
-	else if (_patterns_client_is_registration_error($token)) {
+  elseif (_patterns_client_is_registration_error($token)) {
     drupal_set_message(check_plain($url) . ' - ' . t('%err', array('%err' => $token)), 'error');
   }
   
-  // save the results
+  // Save the results
   else {
-  	drupal_set_message('Registration executed successfully. ' . check_plain($url)); // TODO: proper t()
-  	patterns_client_update_credentials($url, $user, check_plain($token), $email);
-    drupal_set_message('Credentials stored in local database'); // TODO: proper t()
+    drupal_set_message(check_plain(t('Registration executed successfully.')) . ' ' . check_plain($url));
+    patterns_client_update_credentials($url, $user, check_plain($token), $email);
+    drupal_set_message(t('Credentials stored in local database'));
   }
-	
 }
 
 
 function patterns_client_link_user_on_server($url, $user, $pwd) {
 
-	$friend = d2d_api_friend_get_by_url($url);
-	$post = array(
-		'user' => $user,
-		'pwd' => $pwd,
+  $friend = d2d_api_friend_get_by_url($url);
+  $post = array(
+    'user' => $user,
+    'pwd' => $pwd,
   );
-	
+
   if ($post === FALSE) {
     drupal_set_message(t('An error occurred while compacting your account data.'), 'error');
     return FALSE;
   }
   
-	// send the request
-	$error_string = '';  
-	$result = d2d_call_secure_rpc($friend, 'patterns_server_link_client', $post, $error_string);
-	
-	// Unknown Error
+  // Send the request
+  $error_string = '';  
+  $result = d2d_call_secure_rpc($friend, 'patterns_server_link_client', $post, $error_string);
+
+  // Unknown Error
   if (is_null($result)) {
-	  drupal_set_message(check_plain($url) . ' - ' . t('Unknown error'), 'error');
+    drupal_set_message(check_plain($url) . ' - ' . t('Unknown error'), 'error');
   }
-  
-	// Communication Error
-	else if ($result === FALSE) {
-	  drupal_set_message(check_plain($url) . ' - ' . check_plain($error_string), 'error');
+  // Communication Error
+  elseif ($result === FALSE) {
+    drupal_set_message(check_plain($url) . ' - ' . check_plain($error_string), 'error');
   }
-  
   // Trying to parse returned string
-	else { 
-	  $values = d2d_explode($result);
-	  
-	  if ($values === FALSE) {
-	     drupal_set_message(check_plain($url) . ' - ' . t('Could not parse return value. Control server/client versions.'), 'error');
-	  }
-	  
-	   $check = array(
-    	'email' => 'is_string',
-    	'pass' => 'is_string',
-    );
-	
-    if (!d2d_check_array($values, $check)) {
-       drupal_set_message(check_plain($url) . ' - ' . t('Could not extract the data from the encrypted message.'), 'error');
+  else {
+    $values = d2d_explode($result);
+
+    if ($values === FALSE) {
+      drupal_set_message(check_plain($url) . ' - ' . t('Could not parse return value. Control server/client versions.'), 'error');
     }
-    
-  	// Another server error  
-  	else if (_patterns_client_is_linking_error($values)) {
+    $check = array(
+      'email' => 'is_string',
+      'pass' => 'is_string',
+    );
+
+    if (!d2d_check_array($values, $check)) {
+      drupal_set_message(check_plain($url) . ' - ' . t('Could not extract the data from the encrypted message.'), 'error');
+    }
+  
+    // Another server error  
+    elseif (_patterns_client_is_linking_error($values)) {
       drupal_set_message(check_plain($url) . ' - ' . t('%err', array('%err' => $token)), 'error');
     }
-  
-    // save the results
-    else {
+
+    // Save the results
+    else{
       $email = $values['email'];
       $token = $values['pass'];
-  	  drupal_set_message('Existing username on server succesfully linked. ' . check_plain($url)); // TODO: proper t()
-  	  patterns_client_update_credentials($url, $user, check_plain($token), check_plain($email));
-      drupal_set_message('Credentials stored in local database'); // TODO: proper t()
+      drupal_set_message(check_plain(t('Existing username on server succesfully linked.')) . ' ' . check_plain($url));
+      patterns_client_update_credentials($url, $user, check_plain($token), check_plain($email));
+      drupal_set_message(t('Credentials stored in local database'));
     }
-	}
-	
+  }
+
 }
 
 function _patterns_client_is_registration_error($str) {
@@ -182,7 +177,7 @@ function patterns_client_push_patterns($patterns) {
 
     $content = file_get_contents($pattern->file);
     if ($content === FALSE) {
-      drupal_set_message(t('Pattern') . ' ' . check_plain($name) . ' ' . t('could not be processed'), 'error'); 
+      drupal_set_message(check_plain(t('Pattern')) . ' ' . check_plain($name) . ' ' . check_plain(t('could not be processed')), 'error'); 
       continue;
     }
     $imploded_pattern = d2d_implode(
@@ -194,7 +189,7 @@ function patterns_client_push_patterns($patterns) {
     );
     
     if ($imploded_pattern == FALSE) {
-      drupal_set_message(t('An error occurred while processing pattern') . ' ' . check_plain($name) . ' ' . t('Skipped.'), 'error'); 
+      drupal_set_message(check_plain(t('An error occurred while processing pattern')) . ' ' . check_plain($name) . ' ' . check_plain(t('Skipped.')), 'error'); 
       continue;
     }
     
@@ -223,8 +218,8 @@ function patterns_client_push_patterns($patterns) {
   if ($res === FALSE) {
     drupal_set_message(check_plain($url) . ' - ' . check_plain($error_string), 'error');
   }
-  else {
-    drupal_set_message('Upload to server successful.<br/>' . check_plain($url) . ' - ' . check_plain($res)); // TODO: proper t()
+  else{
+    drupal_set_message(check_plain(t('Upload to server successful.')) . ' ' . check_plain($url) . ' - ' . check_plain($res));
   }
 
 }
@@ -259,7 +254,8 @@ function _patterns_client_get_patterns_server_list($limit) {
   }
   elseif (!is_null($result['error'])) {
     drupal_set_message(t('The Patterns server returned this response: @response', array('@response' => $result['error'])), 'error');
-  }else{
+  }
+  else{
     //If everything is OK, return the results completely exploded
     $patterns_list = d2d_explode($result['return']);
     $exploded_result = array();
@@ -300,10 +296,12 @@ function _patterns_client_fetch_server_pattern($pid)  {
   if (!$result) {
     // Unknown error
     drupal_set_message(check_plain($url) . ' - ' . t('Unknown error. Please ensure your Peer instance has provided you permisssions to perform this operation.'), 'error');
-  }else if (!is_null($result['error'])) {
+  }
+  elseif (!is_null($result['error'])) {
     drupal_set_message(t('The Patterns server returned this response: @response', array('@response' => $result['error'])), 'error');
     return $result['error'];
-  }else{
+  }
+  else{
     // Exploded the value and parse it to work with an object
     $pattern_info = d2d_explode($result['return']);
     $pattern = patterns_parser_parse($pattern_info['file'], $pattern_info['format']);
@@ -342,10 +340,12 @@ function _patterns_client_search_server_pattern($token, $type)  {
   if (!$result) {
     // Unknown error
     drupal_set_message(check_plain($url) . ' - ' . t('Unknown error. Please ensure your Peer instance has provided you permisssions to perform this operation.'), 'error');
-  }else if (!is_null($result['error'])) {
+  }
+  elseif (!is_null($result['error'])) {
     drupal_set_message(t('The Patterns server returned this response: @response', array('@response' => $result['error'])), 'error');
     return $result['error'];
-  }else{
+  }
+  else{
     //If everything is OK, return the results completely exploded
     $patterns_list = d2d_explode($result['return']);
     $exploded_result = array();
