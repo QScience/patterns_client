@@ -1,5 +1,5 @@
-name = Patterns Client beta
-description = Manages an encrypted communication with a Patterns server
+name = Patterns Client
+description = Allows the exchange (push/pull) of pattern files from any site running a Patterns Server.
 core = 7.x
 
 package = Patterns
