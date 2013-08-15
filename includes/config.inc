@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Forms and settings for Patterns Client
@@ -7,18 +6,19 @@
 
 module_load_include('inc', 'd2d', 'includes/d2d.forms');
 
+/**
+ * Outgoing configuration form.
+ * @return $form
+ */
 function patterns_client_form_outgoing_configure() {
   $form = array();
-  
   $form['address'] = array(
     '#title' => 'Patterns server address',
     '#required' => TRUE,
     '#default_value' => variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER),
     '#description' => t('Visit the <a href="@url">D2D admin page</a> to add more servers to the list.', array('@url' => url('admin/d2d'))),
   );
-  
   d2d_forms_select_friends($form['address'], 'url');
-  
   $form['auto'] = array(
     '#type' => 'checkbox',
     '#default_value' => variable_get('patterns_client_auto_publish', FALSE),
@@ -32,17 +32,27 @@ function patterns_client_form_outgoing_configure() {
   return $form;
 }
 
+/**
+ * Implements hook form_submit().
+ */
 function patterns_client_form_incoming_configure_submit($form, &$form_state) {
   variable_set('patterns_client_allow_publish', $form_state['values']['allow'] ? TRUE : FALSE);
   drupal_set_message(t('The changes have been saved.'));
 }
 
+/**
+ * Implements hook form_submit().
+ */
 function patterns_client_form_outgoing_configure_submit($form, &$form_state) {
   variable_set('patterns_client_auto_publish', $form_state['values']['auto'] ? TRUE : FALSE);
   variable_set('patterns_client_server', $form_state['values']['address']);
   drupal_set_message(t('The changes have been saved.'));
 }
 
+/**
+ * Main configuration form.
+ * @return $form
+ */
 function patterns_client_config() {
   $build['main'] = array(
     '#title' => t('Patterns Server'),
@@ -51,9 +61,7 @@ function patterns_client_config() {
   $build['main'][] = drupal_get_form('patterns_client_form_outgoing_configure');
   if (variable_get('patterns_client_auto_publish', FALSE)) {
     $url = variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER);
-    
     $credentials = patterns_client_get_full_credentials($url);
-    
     if ($credentials) {
       $build['credentials'] = array(
         '#title' => 'Your current credentials',
@@ -68,38 +76,35 @@ function patterns_client_config() {
       $info['Token'][] = $credentials['token'];
       $info['Email'][] = t('Email');
       $info['Email'][] = $credentials['email'];
-    
       $build['credentials'][] = array(
         '#markup' => theme('table', array('rows' => $info, 'attributes' => array('class' => 'patterns-list'))), );
-      
       $build['credentials']['modify'] = array(
         '#title' => 'Below modify',
       );
-      
     }
     else {
-       drupal_set_message(t('You are not registered on server @url.', array('@url' => $url)), 'error');
+      drupal_set_message(t('You are not registered on server @url.', array('@url' => $url)), 'error');
     }
-    
     // Register new user
     $build['register'] = array(
       '#title' => $credentials ? t('Register a new username (overwrites your current credentials)') : t('Register a new username'),
       '#type' => 'fieldset',
       );
     $build['register'][] = drupal_get_form('patterns_client_register_remoteuser');
-   
-
     // Link to existing account
     $build['link'] = array(
       '#title' => $credentials ? t('Link to an existing username (overwrites your current credentials)') : t('Link to an existing username'),
       '#type' => 'fieldset',
-      '#description' =>  t('If you do not remember your username or password visit your Patterns Server web site and try a password recovery procedure there.'), 
-    );
+      '#description' =>  t('If you do not remember your username or password visit your Patterns Server web site and try a password recovery procedure there.'), );
     $build['link'][] = drupal_get_form('patterns_client_link_remoteuser');
   }
   return $build;
 }
 
+/**
+ * Form for remote user.
+ * @return $form
+ */
 function patterns_client_link_remoteuser() {
   $form = array();
   $form['user'] = array(
@@ -115,15 +120,16 @@ function patterns_client_link_remoteuser() {
     '#title' => t('Password'),
     '#required' => TRUE,
   );
- 
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Link'),
   );
-  
   return $form;
 }
 
+/**
+ * Implements hook_validate().
+ */
 function patterns_client_link_remoteuser_validate($form, &$form_state) {
   if (!variable_get('patterns_client_server', FALSE)) {
     drupal_set_message(t('No server found to link to an existing user'), 'error');
@@ -132,6 +138,9 @@ function patterns_client_link_remoteuser_validate($form, &$form_state) {
   return TRUE;
 }
 
+/**
+ * Implements hook_submit().
+ */
 function patterns_client_link_remoteuser_submit($form, &$form_state) {
   $url = variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER);
   $user = $form_state['values']['user'];
@@ -139,6 +148,10 @@ function patterns_client_link_remoteuser_submit($form, &$form_state) {
   patterns_client_link_user_on_server($url, $user, $pwd);
 }
 
+/**
+ * Form for registering remote user.
+ * @return $form
+ */
 function patterns_client_register_remoteuser() {
   $form = array();
   $form['user'] = array(
@@ -159,31 +172,33 @@ function patterns_client_register_remoteuser() {
     '#title' => t('Email'),
     '#required' => TRUE,
   );
-  
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Register'),
   );
-  
   return $form;
 }
 
+/**
+ * Implements hook_validate().
+ */
 function patterns_client_register_remoteuser_validate($form, &$form_state) {
   if (!variable_get('patterns_client_server', FALSE)) {
-   drupal_set_message(t('No server found to register a new user'), 'error');
-   return FALSE;
+    drupal_set_message(t('No server found to register a new user'), 'error');
+    return FALSE;
   }
-
   if (!valid_email_address($form_state['values']['email'])) {
     form_set_error('email', t('The email address appears to be invalid.'));
   }
-
   if (strlen($form_state['values']['password']) < 6) {
     form_set_error('password', t('Password must be at least 6 characters/digits long'));
   }
   return TRUE;
 }
 
+/**
+ * Implements hook_submit().
+ */
 function patterns_client_register_remoteuser_submit($form, &$form_state) {
   $url = variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER);
   $user = $form_state['values']['user'];
