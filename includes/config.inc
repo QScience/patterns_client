@@ -81,7 +81,7 @@ function patterns_client_config() {
        drupal_set_message(t('You are not registered on server @url.', array('@url' => $url)), 'error');
     }
     
-    // REGISTER NEW
+    // Register new user
     $build['register'] = array(
       '#title' => $credentials ? t('Register a new username (overwrites your current credentials)') : t('Register a new username'),
       '#type' => 'fieldset',
@@ -89,7 +89,7 @@ function patterns_client_config() {
     $build['register'][] = drupal_get_form('patterns_client_register_remoteuser');
    
 
-    // LINK TO
+    // Link to existing account
     $build['link'] = array(
       '#title' => $credentials ? t('Link to an existing username (overwrites your current credentials)') : t('Link to an existing username'),
       '#type' => 'fieldset',
@@ -106,7 +106,6 @@ function patterns_client_link_remoteuser() {
     '#type' => 'textfield',
     '#title' => t('Username'),
     '#description' => t('Existing username on server'),
-    //'#default_value' => variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER),
     '#size' => 40,
     '#maxlength' => PATTERNS_CLIENT_USER_MAX_LENGTH,
     '#required' => TRUE,
@@ -126,18 +125,18 @@ function patterns_client_link_remoteuser() {
 }
 
 function patterns_client_link_remoteuser_validate($form, &$form_state) {
-	if (!variable_get('patterns_client_server', FALSE)) {
-		drupal_set_message(t('No server found to link to an existing user'), 'error');
-		return FALSE;
-	}
-	return TRUE;
+  if (!variable_get('patterns_client_server', FALSE)) {
+    drupal_set_message(t('No server found to link to an existing user'), 'error');
+    return FALSE;
+  }
+  return TRUE;
 }
 
 function patterns_client_link_remoteuser_submit($form, &$form_state) {
-	$url = variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER);
-	$user = $form_state['values']['user'];
-	$pwd = $form_state['values']['password'];
-	patterns_client_link_user_on_server($url, $user, $pwd);
+  $url = variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER);
+  $user = $form_state['values']['user'];
+  $pwd = $form_state['values']['password'];
+  patterns_client_link_user_on_server($url, $user, $pwd);
 }
 
 function patterns_client_register_remoteuser() {
@@ -146,20 +145,19 @@ function patterns_client_register_remoteuser() {
     '#type' => 'textfield',
     '#title' => t('Username'),
     '#description' => t('New username to register on server'),
-    //'#default_value' => variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER),
     '#size' => 40,
     '#maxlength' => PATTERNS_CLIENT_USER_MAX_LENGTH,
     '#required' => TRUE,
   );
   $form['password'] = array(
     '#type' => 'password_confirm',
-  	'#description' => t('Must be at least 6 characters/digits long'),
-  	'#required' => TRUE,
+    '#description' => t('Must be at least 6 characters/digits long'),
+    '#required' => TRUE,
   );
   $form['email'] = array(
     '#type' => 'textfield',
     '#title' => t('Email'),
-  	'#required' => TRUE,
+    '#required' => TRUE,
   );
   
   $form['submit'] = array(
@@ -171,26 +169,25 @@ function patterns_client_register_remoteuser() {
 }
 
 function patterns_client_register_remoteuser_validate($form, &$form_state) {
-	if (!variable_get('patterns_client_server', FALSE)) {
-		drupal_set_message(t('No server found to register a new user'), 'error');
-		return FALSE;
-	}
-	
-	if (!valid_email_address($form_state['values']['email'])) {
-  	form_set_error('email', t('The email address appears to be invalid.'));
-	}
-	
+  if (!variable_get('patterns_client_server', FALSE)) {
+   drupal_set_message(t('No server found to register a new user'), 'error');
+   return FALSE;
+  }
+
+  if (!valid_email_address($form_state['values']['email'])) {
+    form_set_error('email', t('The email address appears to be invalid.'));
+  }
+
   if (strlen($form_state['values']['password']) < 6) {
-  	form_set_error('password', t('Password must be at least 6 characters/digits long'));
-	}
-	
-	return TRUE;
+    form_set_error('password', t('Password must be at least 6 characters/digits long'));
+  }
+  return TRUE;
 }
 
 function patterns_client_register_remoteuser_submit($form, &$form_state) {
-	$url = variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER);
-	$user = $form_state['values']['user'];
-	$pwd = $form_state['values']['password'];
-	$email = $form_state['values']['email'];
-	patterns_client_register_user_on_server($url, $user, $pwd, $email);
+  $url = variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER);
+  $user = $form_state['values']['user'];
+  $pwd = $form_state['values']['password'];
+  $email = $form_state['values']['email'];
+  patterns_client_register_user_on_server($url, $user, $pwd, $email);
 }
