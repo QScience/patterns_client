@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * @file
  * Patterns Client module.
  *
@@ -91,6 +91,9 @@ function patterns_client_menu_alter(&$items) {
   return $items;
 }
 
+/**
+ * Implements publish function.
+ */
 function patterns_client_patterns_publish($pattern) {
   if (variable_get('patterns_client_auto_publish', FALSE)) {
     patterns_client_push_patterns(array($pattern));
@@ -101,10 +104,8 @@ function patterns_client_patterns_publish($pattern) {
 }
 
 /**
- * 
  * Fetches a pattern from the server and adapt it to include the
  * current user and the parenthood relationship.
- * 
  * @param string $pid  Pattern ID in the server
  */
 function patterns_client_fetch_pattern($pid) {
@@ -121,29 +122,25 @@ function patterns_client_fetch_pattern($pid) {
 
 /**
  * Implements hook_form().
- * 
  * Generates a form to search for patterns in the server according to different criteria.
  * The results are output in a table as part of the form itself. Depending on the existence
  * or not of arguments, a different function will be called:
  *   - No arguments: returns the whole list of patterns stored in the server.
  *   - Search: returns only the patterns that match the given criteria.
- * 
  * @param $form
  * @param $form_state
- * @return array  Form to perform the search.  
+ * @return array  Form to perform the search.
  */
 function patterns_client_search_form($form, &$form_state) {
   $form['patterns_search']= array(
       '#type' => 'container',
       '#attributes' => array('class' => array('container-inline')),
-  
   );
   $form['patterns_search']['search'] = array(
       '#type' => 'textfield',
       '#title' => t('Search'),
       '#size' => 15,
       '#attributes' => array('title' => t('Enter the terms you wish to search for.'), 'class' => array('container-inline')),
-  
   );
   $form['patterns_search']['selected'] = array(
       '#type' => 'select',
@@ -157,11 +154,9 @@ function patterns_client_search_form($form, &$form_state) {
           4 => t('Pid'),
       ),
   );
-  
   $form['patterns_search']['actions'] = array('#type' => 'actions');
   $form['patterns_search']['actions']['submit'] = array('#type' => 'submit', '#value' => t('Search'));
   $form['patterns_search']['#submit'][] = 'patterns_client_search_form_submit';
-  
   // Retrieve the whole list if no arguments are given, perform a search otherwise
   $patterns_list  = array();
   if (!isset($form_state['input']['patterns_list'])) {
@@ -176,7 +171,6 @@ function patterns_client_search_form($form, &$form_state) {
         '#submit' => array('patterns_client_search_form_view_all_submit'),
     );
   }
-  
   // Display the results in a table, or no results found message otherwise
   if (sizeof($patterns_list)>0) {
     // Prepare header and rows to be themed as a table
@@ -203,14 +197,12 @@ function patterns_client_search_form($form, &$form_state) {
           array('data' => (_patterns_client_row_count_uuuid($pattern['uuuid']) > 0) ? t('Already pulled'): l(t('Pull'), 'admin/patterns/remote/fetch/' . $pattern['pid'])),
       );
     }
-    
     $form['table'] = array(
         '#theme' => 'table',
         '#header' => $header,
         '#rows' => $rows,
         '#empty' => t('Empty Rows')
     );
-
   }
   else{
     // Display a message to inform about no results found
@@ -218,16 +210,12 @@ function patterns_client_search_form($form, &$form_state) {
       drupal_set_message(t('No patterns matched the given criteria'), 'status');
     }
   }
- 
   return $form;
 }
 
 /**
- * 
- * Implementation of hook_form_validate().
- * 
+ * Implements hook_form_validate().
  * Search form validation from the client side
- * 
  * @param $form
  * @param $form_state
  */
@@ -242,11 +230,8 @@ function patterns_client_search_form_validate($form, &$form_state) {
 }
 
 /**
- * 
- * Implementation of hook_form_submit().
- * 
+ * Implements hook_form_submit().
  * Main function to perform the search.
- * 
  * @param $form
  * @param $form_state
  */
@@ -259,10 +244,8 @@ function patterns_client_search_form_submit($form, &$form_state) {
 }
 
 /**
- * Implementation of hook_form_submit().
- * 
+ * Implements hook_form_submit().
  * Secondary function, to return to the search page without providing any parameters.
- * 
  * @param $form
  * @param $form_state
  */
