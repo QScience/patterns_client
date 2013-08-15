@@ -11,10 +11,10 @@ function patterns_client_form_outgoing_configure() {
   $form = array();
   
   $form['address'] = array(
-  	'#title' => 'Patterns server address',
-  	'#required' => TRUE,
-  	'#default_value' => variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER),
-  	'#description' => t('Visit the <a href="@url">D2D admin page</a> to add more servers to the list.', array('@url' => url('admin/d2d'))),
+    '#title' => 'Patterns server address',
+    '#required' => TRUE,
+    '#default_value' => variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER),
+    '#description' => t('Visit the <a href="@url">D2D admin page</a> to add more servers to the list.', array('@url' => url('admin/d2d'))),
   );
   
   d2d_forms_select_friends($form['address'], 'url');
@@ -55,18 +55,14 @@ function patterns_client_config() {
     $credentials = patterns_client_get_full_credentials($url);
     
     if ($credentials) {
-
-      //drupal_set_message(t('You are correctly registered on server @url.', array('@url' => $url)));
-      
       $build['credentials'] = array(
-      	'#title' => 'Your current credentials',
-      	'#type' => 'fieldset',
+        '#title' => 'Your current credentials',
+        '#type' => 'fieldset',
         '#description' => t('You can edit this data go directly in the Patterns Server web site. Then use the "link to an existing username" form.')
       );
-      
       $info['Server'][] = t('Server');
-  	  $info['Server'][] = $url;
-  	  $info['User'][] = t('User');
+      $info['Server'][] = $url;
+      $info['User'][] = t('User');
       $info['User'][] = $credentials['user'];
       $info['Token'][] = t('Token');
       $info['Token'][] = $credentials['token'];
@@ -74,11 +70,10 @@ function patterns_client_config() {
       $info['Email'][] = $credentials['email'];
     
       $build['credentials'][] = array(
-    		'#markup' => theme('table', array('rows' => $info, 'attributes' => array('class' => 'patterns-list'))),
-    	);
+        '#markup' => theme('table', array('rows' => $info, 'attributes' => array('class' => 'patterns-list'))), );
       
-    	$build['credentials']['modify'] = array(
-      	'#title' => 'Below modify',
+      $build['credentials']['modify'] = array(
+        '#title' => 'Below modify',
       );
       
     }
@@ -88,20 +83,19 @@ function patterns_client_config() {
     
     // REGISTER NEW
     $build['register'] = array(
-  		'#title' => $credentials ? t('Register a new username (overwrites your current credentials)') : t('Register a new username'),
-  		'#type' => 'fieldset',
-		);
-  	$build['register'][] = drupal_get_form('patterns_client_register_remoteuser');
+      '#title' => $credentials ? t('Register a new username (overwrites your current credentials)') : t('Register a new username'),
+      '#type' => 'fieldset',
+      );
+    $build['register'][] = drupal_get_form('patterns_client_register_remoteuser');
    
 
-  	// LINK TO
+    // LINK TO
     $build['link'] = array(
-    	'#title' => $credentials ? t('Link to an existing username (overwrites your current credentials)') : t('Link to an existing username'),
-  		'#type' => 'fieldset',
+      '#title' => $credentials ? t('Link to an existing username (overwrites your current credentials)') : t('Link to an existing username'),
+      '#type' => 'fieldset',
       '#description' =>  t('If you do not remember your username or password visit your Patterns Server web site and try a password recovery procedure there.'), 
-		); 
-  	$build['link'][] = drupal_get_form('patterns_client_link_remoteuser');
-    
+    );
+    $build['link'][] = drupal_get_form('patterns_client_link_remoteuser');
   }
   return $build;
 }
