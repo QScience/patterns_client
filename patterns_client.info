@@ -3,5 +3,5 @@ description = Allows the exchange (push/pull) of pattern files from any site run
 core = 7.x
 
 package = Patterns
-dependencies[] = patterns (7.x-2.x-dev)
+dependencies[] = patterns (>=7.x-2.0)
 dependencies[] = d2d
