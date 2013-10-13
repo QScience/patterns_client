@@ -23,7 +23,7 @@ function patterns_client_form_outgoing_configure() {
     '#type' => 'checkbox',
     '#default_value' => variable_get('patterns_client_auto_publish', FALSE),
     '#title' => t('Automatically publish patterns'),
-    '#description' => t('If checked, patterns are automatically published whenever is marked as \'public\'.'),
+    '#description' => t('If checked, a pattern will be automatically pushed to the Patterns Server when marked as \'public\'.'),
   );
   $form['submit'] = array(
     '#type' => 'submit',
