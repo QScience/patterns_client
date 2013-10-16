@@ -220,17 +220,30 @@ function patterns_client_push_patterns($patterns) {
  * @return array List of patterns currently stored in the server
  */
 function _patterns_client_get_patterns_server_list($limit) {
-  // Get the current server
-  $url = variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER);
+
+  $info = patterns_client_check_credentials_and_display_warns();
+
+  if ($info['ready'] === FALSE) {
+    return;
+  }
+
+  $url = $info['url'];
+  $credentials = $info['credentials'];
+
   $friend = d2d_api_friend_get_by_url($url);
-  // Prepare arguments for the call. In this case just the maximum number of patterns expected
+
+
+// Prepare arguments for the call. In this case just the maximum number of patterns expected
   $post = array(
       'limit' => $limit,
   );
+
+
   // Send the request. We explode the result in two different steps
   $error_string = '';
   $result = d2d_call_secure_rpc($friend, 'patterns_server_get_patterns_list', $post, $error_string);
   $result = d2d_explode($result);
+
   // Display communication errors if any
   if (!$result) {
     drupal_set_message(t('No response from the server. Are you friends with it?'), 'warning');

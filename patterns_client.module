@@ -35,7 +35,7 @@ function patterns_client_menu() {
   );
   // Add new sub tab with search and list as default
   $items['admin/patterns/remote/search'] = array(
-      'title' => 'Patterns at Server',
+      'title' => 'Remote Search',
       'page callback' => 'drupal_get_form',
       'page arguments' => array('patterns_client_search_form'),
       'access arguments' => array('administer patterns'),
@@ -45,7 +45,7 @@ function patterns_client_menu() {
   $items['admin/patterns/remote/subscriptions'] = array(
       'title' => 'Subscriptions',
       'page callback' => 'drupal_get_form',
-      'page arguments' => array('patterns_client_search_form'),
+      'page arguments' => array('patterns_client_subscription_form'),
       'access arguments' => array('administer patterns'),
       'type' => MENU_LOCAL_TASK,
   );
@@ -124,14 +124,13 @@ function patterns_client_fetch_pattern($pid) {
 
 /**
  * Implements hook_form().
- * Generates a form to search for patterns in the server according to different criteria.
- * The results are output in a table as part of the form itself. Depending on the existence
- * or not of arguments, a different function will be called:
+ *
+ * Generates a form to search for patterns in the server according to
+ * different criteria.
+ * The results are output in a table as part of the form itself. Depending
+ * on the existence or not of arguments, a different function will be called:
  *   - No arguments: returns the whole list of patterns stored in the server.
  *   - Search: returns only the patterns that match the given criteria.
- * @param $form
- * @param $form_state
- * @return array  Form to perform the search.
  */
 function patterns_client_search_form($form, &$form_state) {
   $form['patterns_search']= array(
@@ -142,7 +141,10 @@ function patterns_client_search_form($form, &$form_state) {
       '#type' => 'textfield',
       '#title' => t('Search'),
       '#size' => 15,
-      '#attributes' => array('title' => t('Enter the terms you wish to search for.'), 'class' => array('container-inline')),
+      '#attributes' => array(
+        'title' => t('Enter the terms you wish to search for.'),
+        'class' => array('container-inline'),
+      ),
   );
   $form['patterns_search']['selected'] = array(
       '#type' => 'select',
@@ -157,9 +159,13 @@ function patterns_client_search_form($form, &$form_state) {
       ),
   );
   $form['patterns_search']['actions'] = array('#type' => 'actions');
-  $form['patterns_search']['actions']['submit'] = array('#type' => 'submit', '#value' => t('Search'));
+  $form['patterns_search']['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Search'),
+  );
   $form['patterns_search']['#submit'][] = 'patterns_client_search_form_submit';
-  // Retrieve the whole list if no arguments are given, perform a search otherwise
+
+  // Retrieve the whole list if no arguments are given, else perform a search.
   $patterns_list  = array();
   if (!isset($form_state['input']['patterns_list'])) {
     $patterns_list = _patterns_client_get_patterns_server_list(10000);
@@ -244,6 +250,20 @@ function patterns_client_search_form_submit($form, &$form_state) {
   $form_state['input']['patterns_list'] = _patterns_client_search_server_pattern($token, $type);
   $form_state['rebuild'] = TRUE;
 }
+
+/**
+ * Implements hook_form().
+ *
+ */
+function patterns_client_subscription_form($form, &$form_state) {
+  $notice = t('Subscriptions are not yet implemented. Your contribution is welcome...');
+  drupal_set_message($notice, 'warning');
+  $form['subscriptions']= array(
+    '#markup' => '<p>' . $notice . '</p>',
+  );
+  return $form;
+}
+
 
 /**
  * Implements hook_form_submit().

@@ -5,8 +5,8 @@
  * Patterns Client constants.
  */
 
-
-define('PATTERNS_CLIENT_SERVER', 'http://drupal-patterns.org/');
+define('PATTERNS_CLIENT_SERVER', 'http://drupal-patterns.org');
+define('PATTERNS_CLIENT_SERVER_XMLRPC', PATTERNS_CLIENT_SERVER . 'xmlrpc.php');
 define('PATTERNS_CLIENT_CREDENTIALS', 'patterns_client_credentials');
 
 
