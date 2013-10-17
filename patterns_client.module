@@ -26,35 +26,35 @@ function patterns_client_help($path, $arg) {
 function patterns_client_menu() {
   // Add new tab in Patterns main menu to gather all remote operations
   $items['admin/patterns/remote'] = array(
-      'title' => 'Remote',
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array('patterns_client_search_form'),
-      'access arguments' => array('administer patterns'),
-      'type' => MENU_LOCAL_TASK,
-      'weight' => -1,
+    'title' => 'Remote',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('patterns_client_search_form'),
+    'access arguments' => array('administer patterns'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => -1,
   );
   // Add new sub tab with search and list as default
   $items['admin/patterns/remote/search'] = array(
-      'title' => 'Remote Search',
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array('patterns_client_search_form'),
-      'access arguments' => array('administer patterns'),
-      'type' => MENU_DEFAULT_LOCAL_TASK,
+    'title' => 'Remote Search',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('patterns_client_search_form'),
+    'access arguments' => array('administer patterns'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
   );
   // Add new sub tab for the subscriptions function
   $items['admin/patterns/remote/subscriptions'] = array(
-      'title' => 'Subscriptions',
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array('patterns_client_subscription_form'),
-      'access arguments' => array('administer patterns'),
-      'type' => MENU_LOCAL_TASK,
+    'title' => 'Subscriptions',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('patterns_client_subscription_form'),
+    'access arguments' => array('administer patterns'),
+    'type' => MENU_LOCAL_TASK,
   );
   // Add new entry to fetch patterns from server (based on server PID)
   $items['admin/patterns/remote/fetch/%'] = array(
-      'page callback' => 'patterns_client_fetch_pattern',
-      'page arguments' => array(4),
-      'access arguments' => array('administer patterns'),
-      'type' => MENU_CALLBACK,
+    'page callback' => 'patterns_client_fetch_pattern',
+    'page arguments' => array(4),
+    'access arguments' => array('administer patterns'),
+    'type' => MENU_CALLBACK,
   );
   $items['admin/patterns/share'] = array(
     'title' => 'Share',
@@ -75,8 +75,8 @@ function patterns_client_permission() {
   return array(
     'access patterns_client' => array(
       'title' => t('Access permission for the patterns_client module'),
-      )
-    );
+    )
+  );
 }
 
 /**
@@ -134,29 +134,29 @@ function patterns_client_fetch_pattern($pid) {
  */
 function patterns_client_search_form($form, &$form_state) {
   $form['patterns_search']= array(
-      '#type' => 'container',
-      '#attributes' => array('class' => array('container-inline')),
+    '#type' => 'container',
+    '#attributes' => array('class' => array('container-inline')),
   );
   $form['patterns_search']['search'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Search'),
-      '#size' => 15,
-      '#attributes' => array(
-        'title' => t('Enter the terms you wish to search for.'),
-        'class' => array('container-inline'),
-      ),
+    '#type' => 'textfield',
+    '#title' => t('Search'),
+    '#size' => 15,
+    '#attributes' => array(
+      'title' => t('Enter the terms you wish to search for.'),
+      'class' => array('container-inline'),
+    ),
   );
   $form['patterns_search']['selected'] = array(
-      '#type' => 'select',
-      '#title' => t('Selected'),
-      '#title_display' => 'invisible',
-      '#options' => array(
-          0 => t('Title'),
-          1 => t('Description'),
-          2 => t('Author'),
-          3 => t('UUID'),
-          4 => t('Pid'),
-      ),
+    '#type' => 'select',
+    '#title' => t('Selected'),
+    '#title_display' => 'invisible',
+    '#options' => array(
+      0 => t('Title'),
+      1 => t('Description'),
+      2 => t('Author'),
+      3 => t('UUID'),
+      4 => t('Pid'),
+    ),
   );
   $form['patterns_search']['actions'] = array('#type' => 'actions');
   $form['patterns_search']['actions']['submit'] = array(
@@ -174,9 +174,9 @@ function patterns_client_search_form($form, &$form_state) {
     $patterns_list = $form_state['input']['patterns_list'];
     // In case a search query has been perforem, add extra "view all" button
     $form['patterns_search']['actions']['view_all'] = array(
-        '#type' => 'submit',
-        '#value' => t('View all'),
-        '#submit' => array('patterns_client_search_form_view_all_submit'),
+      '#type' => 'submit',
+      '#value' => t('View all'),
+      '#submit' => array('patterns_client_search_form_view_all_submit'),
     );
   }
   // Display the results in a table, or no results found message otherwise
@@ -184,32 +184,32 @@ function patterns_client_search_form($form, &$form_state) {
     // Prepare header and rows to be themed as a table
     //Added Attributes below to allow the link to open in a separate window
     $header = array(
-        array('data' => t('PID (in the server)')),
-        array('data' => t('UUID')),
-        array('data' => t('Title')),
-        array('data' => t('Description')),
-        array('data' => t('Author')),
-        array('data' => t('Format')),
-        array('data' => t('Preview')),
-        array('data' => t('Pull')),
+      array('data' => t('PID (in the server)')),
+      array('data' => t('UUID')),
+      array('data' => t('Title')),
+      array('data' => t('Description')),
+      array('data' => t('Author')),
+      array('data' => t('Format')),
+      array('data' => t('Preview')),
+      array('data' => t('Pull')),
     );
     foreach ($patterns_list as $pattern) {
       $rows[] = array(
-          array('data' => $pattern['pid']),
-          array('data' => $pattern['uuuid']),
-          array('data' => $pattern['title']),
-          array('data' => $pattern['description']),
-          array('data' => $pattern['author']),
-          array('data' => $pattern['format']),
-          array('data' => l(t('Preview'), $pattern['view_url'], array('attributes' => array('target' => 'blank')))),
-          array('data' => (_patterns_client_row_count_uuuid($pattern['uuuid']) > 0) ? t('Already pulled'): l(t('Pull'), 'admin/patterns/remote/fetch/' . $pattern['pid'])),
+        array('data' => $pattern['pid']),
+        array('data' => $pattern['uuuid']),
+        array('data' => $pattern['title']),
+        array('data' => $pattern['description']),
+        array('data' => $pattern['author']),
+        array('data' => $pattern['format']),
+        array('data' => l(t('Preview'), $pattern['view_url'], array('attributes' => array('target' => 'blank')))),
+        array('data' => (_patterns_client_row_count_uuuid($pattern['uuuid']) > 0) ? t('Already pulled'): l(t('Pull'), 'admin/patterns/remote/fetch/' . $pattern['pid'])),
       );
     }
     $form['table'] = array(
-        '#theme' => 'table',
-        '#header' => $header,
-        '#rows' => $rows,
-        '#empty' => t('Empty Rows')
+      '#theme' => 'table',
+      '#header' => $header,
+      '#rows' => $rows,
+      '#empty' => t('Empty Rows')
     );
   }
   else{

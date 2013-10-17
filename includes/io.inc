@@ -7,7 +7,6 @@
 
 
 module_load_include('module', 'd2d');
-module_load_include('inc', 'patterns_client', 'includes/history');
 
 /**
  * Provides the full credentials.
@@ -59,9 +58,9 @@ function patterns_client_is_user_registered_on_server($server, $user = NULL) {
 function patterns_client_register_user_on_server($url, $user, $pwd, $email) {
   $friend = d2d_api_friend_get_by_url($url);
   $post = array(
-   'user' => $user,
-   'pwd' => $pwd,
-   'email' => $email,
+    'user' => $user,
+    'pwd' => $pwd,
+    'email' => $email,
   );
   // Send the request
   $error_string = '';
@@ -235,7 +234,7 @@ function _patterns_client_get_patterns_server_list($limit) {
 
 // Prepare arguments for the call. In this case just the maximum number of patterns expected
   $post = array(
-      'limit' => $limit,
+    'limit' => $limit,
   );
 
 
@@ -270,32 +269,34 @@ function _patterns_client_get_patterns_server_list($limit) {
  */
 function _patterns_client_fetch_server_pattern($pid)  {
   global $user;
-  // Get the current server
+  // Get the current server.
   $url = variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER);
   $friend = d2d_api_friend_get_by_url($url);
-  // Prepare arguments for the call. In this case just the maximum number of patterns expected
+  // Prepare arguments for the call. In this case just the maximum number
+  // of patterns expected.
   $post = array(
-      'pid' => $pid,
+    'pid' => $pid,
   );
-  // Send the request. We explode the result in two different steps
+  // Send the request. We explode the result in two different steps.
   $error_string = '';
   $result = d2d_call_secure_rpc($friend, 'patterns_server_fetch_pattern', $post, $error_string);
   $result = d2d_explode($result);
-  // Display communication errors if any
+  // Display communication errors if any.
   if (!$result) {
-    // Unknown error
-    drupal_set_message(check_plain($url) . ' - ' . t('Unknown error. Please ensure your Peer instance has provided you permisssions to perform this operation.'), 'error');
+    // Unknown error.
+    drupal_set_message(check_plain($url) . ' - ' . t('Unknown error. Please make sure that the server has provided you permisssions to perform this operation.'), 'error');
   }
   elseif (!is_null($result['error'])) {
     drupal_set_message(t('The Patterns server returned this response: @response', array('@response' => $result['error'])), 'error');
     return $result['error'];
   }
   else{
-    // Exploded the value and parse it to work with an object
+    // Exploded the value and parse it to work with an object.
     $pattern_info = d2d_explode($result['return']);
     $pattern = patterns_parser_parse($pattern_info['file'], $pattern_info['format']);
-    //Add history header including all the pulled pattern as ancestor
-    $pattern = patterns_history_add_header($pattern, 'pull', $url, $friend['d2d_id'], array($pattern_info['uuuid']));
+    // Add parent header including all the pulled pattern as parent.
+    patterns_history_set_parent($pattern, $url, $friend['d2d_id'], 'pull',
+                                array($pattern_info['uuuid']));
     return _patterns_io_save_pattern($pattern, 'clone_' . $pattern_info['uuuid'], $pattern_info['format'], NULL, NULL, $user->name, $pattern_info['uuuid']);
   }
 }
@@ -313,8 +314,8 @@ function _patterns_client_search_server_pattern($token, $type)  {
   $friend = d2d_api_friend_get_by_url($url);
   // Prepare arguments for the call. In this case just the maximum number of patterns expected
   $post = array(
-      'token' => $token,
-      'type' => $type,
+    'token' => $token,
+    'type' => $type,
   );
   // Send the request. We explode the result in two different steps
   $error_string = '';
