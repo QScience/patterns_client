@@ -61,50 +61,83 @@ function patterns_client_config() {
     '#type' => 'fieldset',
   );
   $build['main'][] = drupal_get_form('patterns_client_form_outgoing_configure');
-  if (variable_get('patterns_client_auto_publish', FALSE)) {
-    $url = $info['url'];
-    $credentials = $info['credentials'];
-    if ($credentials) {
-      $build['credentials'] = array(
-        '#title' => 'Your current credentials',
-        '#type' => 'fieldset',
-        '#description' => t('You can edit this data go directly in the Patterns Server web site. Then use the "link to an existing username" form.')
-      );
-      $rows = array();
-      $rows['Server'][] = t('Server');
-      $rows['Server'][] = $url;
-      $rows['User'][] = t('User');
-      $rows['User'][] = $credentials['user'];
-      $rows['Token'][] = t('Token');
-      $rows['Token'][] = $credentials['token'];
-      $rows['Email'][] = t('Email');
-      $rows['Email'][] = $credentials['email'];
-      $build['credentials'][] = array(
-        '#markup' => theme('table', array('rows' => $rows, 'attributes' => array('class' => 'patterns-list'))), );
-      $build['credentials']['modify'] = array(
-        '#title' => 'Below modify',
-      );
-    }
-    elseif ($info['url']) {
-      drupal_set_message(t('No username registered on server @url.', array('@url' => $url)), 'warning');
-    }
-    else {
-      // nothing
-    }
-    // Register new user
-    $build['register'] = array(
-      '#title' => $credentials ? t('Register a new username (overwrites your current credentials)') : t('Register a new username'),
+  if ($info['url']) {
+    // Show credentials.
+    $build['credentials'] = array(
+      '#title' => 'Your current credentials',
       '#type' => 'fieldset',
-      );
+      '#description' => t('You can edit this data directly in the Patterns Server web site. Then use the "link to an existing username" form.')
+    );
+    $build['credentials'][] = drupal_get_form('patterns_client_credentials_form', $info);
+
+    // Register new user.
+    $build['register'] = array(
+      '#title' => $info['credentials'] ? t('Register a new username (overwrites your current credentials)') : t('Register a new username'),
+      '#type' => 'fieldset',
+    );
     $build['register'][] = drupal_get_form('patterns_client_register_remoteuser');
-    // Link to existing account
+    // Link to existing account.
     $build['link'] = array(
-      '#title' => $credentials ? t('Link to an existing username (overwrites your current credentials)') : t('Link to an existing username'),
+      '#title' => $info['credentials'] ? t('Link to an existing username (overwrites your current credentials)') : t('Link to an existing username'),
       '#type' => 'fieldset',
       '#description' =>  t('If you do not remember your username or password visit your Patterns Server web site and try a password recovery procedure there.'), );
     $build['link'][] = drupal_get_form('patterns_client_link_remoteuser');
   }
   return $build;
+}
+
+function patterns_client_credentials_form($form, &$form_state, $info) {
+  $form = array();
+  $credentials = $info['credentials'];
+  $url = $info['url'];
+  if ($credentials) {
+    $rows = array();
+    $rows['Server'][] = t('Server');
+    $rows['Server'][] = $url;
+    $rows['User'][] = t('User');
+    $rows['User'][] = $credentials['user'];
+    $rows['Token'][] = t('Token');
+    $rows['Token'][] = $credentials['token'];
+    $rows['Email'][] = t('Email');
+    $rows['Email'][] = $credentials['email'];
+
+    $form['credentials_table'] = array(
+      '#markup' => theme('table', array(
+        'rows' => $rows,
+        'attributes' => array('class' => 'patterns-list'))
+      ),
+    );
+    $form['credentials_delete'] = array(
+      '#type' => 'submit',
+      '#value' => t('Reset current credentials'),
+      '#suffix' => t('. Your credentials will be deleted only locally, and this action cannot be undone.'),
+      '#submit' => array('patterns_client_delete_credentials_submit'),
+    );
+  }
+  else {
+    $form['no_credentials'] = array(
+      '#markup' => t('No valid credentials found.'),
+    );
+    // Messages are already displayed.
+
+  }
+  return $form;
+}
+
+/**
+ * Implements hook_submit(). Deletes current credentials from local db.
+ */
+function patterns_client_delete_credentials_submit($form, &$form_state) {
+  $server = variable_get('patterns_client_server');
+  if ($server) {
+    $current = variable_get(PATTERNS_CLIENT_CREDENTIALS, array());
+    unset($current[$server]);
+    variable_set(PATTERNS_CLIENT_CREDENTIALS, $current);
+    drupal_set_message('Credentials reset.');
+  }
+  else {
+    drupal_set_message('Could not reset credentials. You are not registered to a Patterns Server', 'warning');
+  }
 }
 
 /**

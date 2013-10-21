@@ -93,7 +93,7 @@ function patterns_client_check_credentials_and_display_warns($verbose = TRUE, $p
             ));
           }
           else {
-            $credentials_msg = t('You are currently not friend with !server.' , array(
+            $credentials_msg = t('You have not registered a username on !server yet.' , array(
               '!server' => $pserver_link,
             ));
           }
