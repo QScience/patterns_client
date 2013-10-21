@@ -158,7 +158,7 @@ function _patterns_client_is_linking_error($str) {
  * Push patterns to the server.
  */
 function patterns_client_push_patterns($patterns) {
-  $url = variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER);
+  $url = variable_get('patterns_client_server');
   if (!patterns_client_is_user_registered_on_server($url)) {
     drupal_set_message(t('No registered Patterns server found.'), 'error');
     return FALSE;
@@ -270,7 +270,7 @@ function _patterns_client_get_patterns_server_list($limit) {
 function _patterns_client_fetch_server_pattern($pid)  {
   global $user;
   // Get the current server.
-  $url = variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER);
+  $url = variable_get('patterns_client_server', PATTERNS_CLIENT_OFFICIAL_SERVER);
   $friend = d2d_api_friend_get_by_url($url);
   // Prepare arguments for the call. In this case just the maximum number
   // of patterns expected.
@@ -310,7 +310,7 @@ function _patterns_client_fetch_server_pattern($pid)  {
  */
 function _patterns_client_search_server_pattern($token, $type)  {
   // Get the current server
-  $url = variable_get('patterns_client_server', PATTERNS_CLIENT_SERVER);
+  $url = variable_get('patterns_client_server', PATTERNS_CLIENT_OFFICIAL_SERVER);
   $friend = d2d_api_friend_get_by_url($url);
   // Prepare arguments for the call. In this case just the maximum number of patterns expected
   $post = array(
