@@ -110,30 +110,33 @@ function patterns_client_link_user_on_server($url, $user, $pwd) {
     drupal_set_message(check_plain($url) . ' - ' . check_plain($error_string), 'error');
   }
   // Trying to parse returned string
+  elseif (_patterns_client_is_linking_error($result)) {
+    drupal_set_message(check_plain($url) . ' - ' . t('%err', array('%err' => $result)), 'error');
+  }
   else {
     $values = d2d_explode($result);
-
+//    debug(print_r($result, TRUE));
+//    debug(print_r($values, TRUE));
     if ($values === FALSE) {
       drupal_set_message(check_plain($url) . ' - ' . t('Could not parse return value. Control server/client versions.'), 'error');
     }
-    $check = array(
-      'email' => 'is_string',
-      'pass' => 'is_string',
-    );
-    if (!d2d_check_array($values, $check)) {
-      drupal_set_message(check_plain($url) . ' - ' . t('Could not extract the data from the encrypted message.'), 'error');
-    }
-    // Another server error
-    elseif (_patterns_client_is_linking_error($values)) {
-      drupal_set_message(check_plain($url) . ' - ' . t('%err', array('%err' => $token)), 'error');
-    }
-    // Save the results
-    else{
-      $email = $values['email'];
-      $token = $values['pass'];
-      drupal_set_message(check_plain(t('Existing username on server succesfully linked.')) . ' ' . check_plain($url));
-      patterns_client_update_credentials($url, $user, check_plain($token), check_plain($email));
-      drupal_set_message(t('Credentials stored in local database'));
+    else {
+      $check = array(
+        'mail' => 'is_string',
+        'pass' => 'is_string',
+      );
+      if (!d2d_check_array($values, $check)) {
+        drupal_set_message(check_plain($url) . ' - ' . t('Could not extract the data from the encrypted message.'), 'error');
+      }
+
+      // Save the results
+      else {
+        $email = $values['mail'];
+        $token = $values['pass'];
+        drupal_set_message(check_plain(t('Existing username on server succesfully linked.')) . ' ' . check_plain($url));
+        patterns_client_update_credentials($url, $user, check_plain($token), check_plain($email));
+        drupal_set_message(t('Credentials stored in local database'));
+      }
     }
   }
 }
