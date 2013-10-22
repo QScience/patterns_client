@@ -290,13 +290,24 @@ function _patterns_client_fetch_server_pattern($pid)  {
     drupal_set_message(t('The Patterns server returned this response: @response', array('@response' => $result['error'])), 'error');
     return $result['error'];
   }
-  else{
+  else {
     // Exploded the value and parse it to work with an object.
     $pattern_info = d2d_explode($result['return']);
     $pattern = patterns_parser_parse($pattern_info['file'], $pattern_info['format']);
-    // Add parent header including all the pulled pattern as parent.
-    patterns_history_set_parent($pattern, $url, $friend['d2d_id'], 'pull',
-                                array($pattern_info['uuuid']));
+    debug(print_r($pattern, TRUE));
+    // Add parent header including all the pulled pattern as parent
+    $parents = array();
+    $parents[] = array(
+      'action' => 'pull',
+      'host' => $url,
+      'd2d_id' => $friend['d2d_id'],
+      'uuuid' => $pattern_info['uuuid'],
+      'title' => @$pattern['info']['title'],
+      'category' => @$pattern['info']['category'],
+      'author' => @$pattern['info']['author'],
+    );
+    patterns_history_set_parent($pattern, $parents);
+
     return _patterns_io_save_pattern($pattern, 'clone_' . $pattern_info['uuuid'], $pattern_info['format'], NULL, NULL, $user->name, $pattern_info['uuuid']);
   }
 }
