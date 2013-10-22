@@ -294,7 +294,7 @@ function _patterns_client_fetch_server_pattern($pid)  {
     // Exploded the value and parse it to work with an object.
     $pattern_info = d2d_explode($result['return']);
     $pattern = patterns_parser_parse($pattern_info['file'], $pattern_info['format']);
-    debug(print_r($pattern, TRUE));
+    //debug(print_r($pattern, TRUE));
     // Add parent header including all the pulled pattern as parent
     $parents = array();
     $parents[] = array(
