@@ -110,7 +110,7 @@ function patterns_client_credentials_form($form, &$form_state, $info) {
     $form['credentials_delete'] = array(
       '#type' => 'submit',
       '#value' => t('Reset current credentials'),
-      '#suffix' => t('. Your credentials will be deleted only locally, and this action cannot be undone.'),
+      '#suffix' => t('Your credentials will be deleted only locally, and this action cannot be undone.'),
       '#submit' => array('patterns_client_delete_credentials_submit'),
     );
   }

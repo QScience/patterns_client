@@ -21,6 +21,10 @@ function patterns_client_check_credentials_and_display_warns($verbose = TRUE, $p
     'id' => FALSE,
     'credentials' => FALSE,
     'friend' => FALSE,
+    'd2d_id' => FALSE,
+    'name' => FALSE,
+    'description' => FALSE,
+    'public_key' => FALSE,
     'ready' => FALSE,
   );
 
@@ -53,6 +57,10 @@ function patterns_client_check_credentials_and_display_warns($verbose = TRUE, $p
       }
       if ($i['url'] === $url) {
         $out['id'] = $i['id'];
+        $out['name'] = $i['name'];
+        $out['description'] = $i['description'];
+        $out['d2d_id'] = $i['d2d_id'];
+        $out['public_key'] = $i['public_key'];
         $out['friend'] = $i['is_friend'];
         break;
       }
