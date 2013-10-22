@@ -5,7 +5,6 @@
  * Code related to send pattern to server / receive pattern as server.
  */
 
-
 module_load_include('module', 'd2d');
 
 /**
@@ -107,16 +106,17 @@ function patterns_client_link_user_on_server($url, $user, $pwd) {
   }
   // Communication Error
   elseif ($result === FALSE) {
-    drupal_set_message(check_plain($url) . ' - ' . check_plain($error_string), 'error');
+    drupal_set_message(check_plain($url) . ' -A ' . check_plain($error_string), 'error');
   }
   // Trying to parse returned string
   elseif (_patterns_client_is_linking_error($result)) {
-    drupal_set_message(check_plain($url) . ' - ' . t('%err', array('%err' => $result)), 'error');
+    drupal_set_message(check_plain($url) . ' - ' . t('%err', array(
+      '%err' => $result,
+    )), 'error');
   }
   else {
     $values = d2d_explode($result);
-//    debug(print_r($result, TRUE));
-//    debug(print_r($values, TRUE));
+
     if ($values === FALSE) {
       drupal_set_message(check_plain($url) . ' - ' . t('Could not parse return value. Control server/client versions.'), 'error');
     }

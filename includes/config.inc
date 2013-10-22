@@ -156,7 +156,7 @@ function patterns_client_link_remoteuser() {
   );
   $form['password'] = array(
     '#type' => 'password',
-    '#title' => t('Password'),
+    '#title' => t('Token'),
     '#required' => TRUE,
   );
   $form['submit'] = array(
